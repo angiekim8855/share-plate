@@ -1,20 +1,20 @@
-## 📌 작업 내용
-- 주요 작업 내용을 간단히 bullet point로 정리해주세요.
-- 어떤 화면을 구현/수정했는지, 어떤 기능을 추가/개선했는지 작성해주세요.
+## 📌 What I Did
+- Briefly list the key changes made in this PR.
+- Describe what screens were added/modified or what features were implemented/improved.
 
-## 🧪 테스트 방법
-- 어떤 기기나 환경에서 테스트했는지
-- 어떤 결과가 나왔는지 적어주세요.
+## 🧪 How to Test
+- Describe the environment or device used for testing.
+- Explain how the feature was tested and what the expected result was.
 
-## ✅ 참고 사항
-- 리뷰할 때 알아두면 좋은 정보
-- 다음 작업으로 이어질 내용이나 남은 TODO 등을 적어주세요.
+## ✅ Notes
+- Any additional context helpful for reviewing the PR
+- Mention any remaining TODOs or work to be done in future PRs
 
 ---
 
-### 🔍 체크리스트 (작성 후 체크해주세요)
+### 🔍 Checklist (Please check before submitting)
 
-- [ ] 불필요한 console.log 제거
-- [ ] 주석 및 테스트 코드 정리
-- [ ] 브랜치 이름과 PR 제목이 작업 내용을 잘 설명하는지 확인
-- [ ] UI/기능 정상 동작 확인 (iOS / Android)
+- [ ] Removed unnecessary console.log statements
+- [ ] Cleaned up comments and test code
+- [ ] PR title and branch name clearly describe the work
+- [ ] Verified UI/functionality works correctly (iOS / Android)
