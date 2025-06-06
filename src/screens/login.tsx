@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-export default function login() {
+export default function Login() {
     return (
         <View style={styles.container}>
             <Text>로그인 화면입니다</Text>
