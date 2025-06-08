@@ -1,0 +1,18 @@
+[
+    {
+        "userType": 1,
+        "email": "",
+        "phone": "01012345678",
+        "name": "eunji",
+        "favoriteStore": ["1"],
+        "orderList": []
+    },
+    {
+        "userType": 2,
+        "email": "",
+        "phone": "01012345678",
+        "name": "angie",
+        "favorite": [],
+        "orderList": []
+    }
+]
