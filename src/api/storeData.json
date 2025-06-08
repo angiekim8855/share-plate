@@ -1,0 +1,48 @@
+[
+    {
+        "storeId": "1",
+        "name": "김밥천국",
+        "bizNumber": "25325325",
+        "category": "한식",
+        "address": "서울 강남구",
+        "rating": 4.5,
+        "bankAccount": "12345",
+        "closeTime": "2025-06-04T20:30:00.000Z",
+        "itemList": [
+            {
+                "itemId": "123",
+                "itemName": "",
+                "itemImg": "",
+                "price": 1000,
+                "finalPrice": 500,
+                "addDate": "2025-06-04T10:30:00.000Z",
+                "ea": 3,
+                "orderNumberList": ["1242", "42142", "24145423"]
+            }
+        ],
+        "reviewList": [{ "img": "", "userName": "", "orderNumber": "", "reviewId": "", "reviewDetail": "", "date": "2025-06-04T10:30:00.000Z" }]
+    },
+    {
+        "storeId": "3",
+        "name": "금화돈까스",
+        "bizNumber": "124215325",
+        "category": "한식",
+        "address": "서울 동대문구",
+        "rating": 4.8,
+        "bankAccount": "12345",
+        "closeTime": "2025-06-04T20:30:00.000Z",
+        "itemList": [
+            {
+                "itemId": "123",
+                "itemName": "",
+                "itemImg": "",
+                "price": 1000,
+                "finalPrice": 500,
+                "addDate": "2025-06-04T10:30:00.000Z",
+                "ea": 3,
+                "orderNumberList": ["1242", "42142", "24145423"]
+            }
+        ],
+        "reviewList": [{ "img": "", "userName": "", "orderNumber": "", "reviewId": "", "reviewDetail": "", "date": "2025-06-04T10:30:00.000Z" }]
+    }
+]
