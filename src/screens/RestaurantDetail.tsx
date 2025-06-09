@@ -1,7 +1,8 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, Image, ScrollView, SafeAreaView, TouchableOpacity } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/types";
+import ReservationBottomSheet from "../components/ReservationBottomSheet";
 
 type RestaurantDetailRouteProp = RouteProp<RootStackParamList, "RestaurantDetail">;
 
@@ -9,46 +10,66 @@ export default function RestaurantDetail() {
     const route = useRoute<RestaurantDetailRouteProp>();
     const { restaurant } = route.params;
 
+    const [modalVisible, setModalVisible] = useState(false);
+
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>{restaurant.name}</Text>
-            <Text>📍 {restaurant.address}</Text>
-            <Text>⭐ {restaurant.rating}</Text>
-            <Text>⏰ 마감 시간: {new Date(restaurant.closeTime).toLocaleTimeString()}</Text>
+        <SafeAreaView style={styles.container}>
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+                <Text style={styles.title}>{restaurant.name}</Text>
+                <Text>📍 {restaurant.address}</Text>
+                <Text>⭐ {restaurant.rating}</Text>
+                <Text>⏰ 마감 시간: {new Date(restaurant.closeTime).toLocaleTimeString()}</Text>
 
-            <Text style={styles.sectionTitle}>📋 메뉴</Text>
-            {restaurant.itemList.map((item) => (
-                <View key={item.itemId} style={styles.menuItem}>
-                    <Image source={item.itemImg ? item.itemImg : require("../../assets/default-food.jpeg")} style={styles.image} />
-                    <View style={styles.menuText}>
-                        <Text>{item.itemName || "메뉴 이름 없음"}</Text>
-                        <View style={styles.priceContainer}>
-                            <Text style={styles.originalPrice}>{item.price.toLocaleString()}원</Text>
-                            <Text style={styles.discountPrice}>{item.finalPrice.toLocaleString()}원</Text>
+                <Text style={styles.sectionTitle}>📋 메뉴</Text>
+                {restaurant.itemList.map((item) => (
+                    <View key={item.itemId} style={styles.menuItem}>
+                        <Image source={item.itemImg ? item.itemImg : require("../../assets/default-food.jpeg")} style={styles.image} />
+                        <View style={styles.menuText}>
+                            <Text>{item.itemName || "메뉴 이름 없음"}</Text>
+                            <View style={styles.priceContainer}>
+                                <Text style={styles.originalPrice}>{item.price.toLocaleString()}원</Text>
+                                <Text style={styles.discountPrice}>{item.finalPrice.toLocaleString()}원</Text>
+                            </View>
+                            <Text>수량: {item.ea}</Text>
                         </View>
-                        <Text>수량: {item.ea}</Text>
                     </View>
-                </View>
-            ))}
+                ))}
 
-            <Text style={styles.sectionTitle}>📝 리뷰</Text>
-            {restaurant.reviewList.map((review, index) => (
-                <View style={styles.reviewContainer} key={`${review.reviewId}-${index}`}>
-                    {review.img && <Image source={{ uri: review.img }} style={styles.reviewImage} />}
-                    <View style={styles.reviewContent}>
-                        <Text style={styles.userName}>{review.userName || "익명"}</Text>
-                        <Text style={styles.reviewDetail}>{review.reviewDetail}</Text>
-                        <Text style={styles.reviewDate}>{new Date(review.date).toLocaleDateString()}</Text>
+                <Text style={styles.sectionTitle}>📝 리뷰</Text>
+                {restaurant.reviewList.map((review, index) => (
+                    <View style={styles.reviewContainer} key={`${review.reviewId}-${index}`}>
+                        {review.img && <Image source={{ uri: review.img }} style={styles.reviewImage} />}
+                        <View style={styles.reviewContent}>
+                            <Text style={styles.userName}>{review.userName || "익명"}</Text>
+                            <Text style={styles.reviewDetail}>{review.reviewDetail}</Text>
+                            <Text style={styles.reviewDate}>{new Date(review.date).toLocaleDateString()}</Text>
+                        </View>
                     </View>
-                </View>
-            ))}
-        </ScrollView>
+                ))}
+            </ScrollView>
+            <TouchableOpacity style={styles.reserveButton} onPress={() => setModalVisible(true)}>
+                <Text style={styles.reserveButtonText}>예약하기</Text>
+            </TouchableOpacity>
+            <ReservationBottomSheet
+                isVisible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                onConfirm={(quantities) => {
+                    console.log('예약 수량:', quantities);
+                    setModalVisible(false);
+                }}
+                item={restaurant.itemList}
+            />
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
+    },
+    scrollContent: {
         padding: 16,
+        paddingBottom: 100, // 버튼 영역 가리기 방지
     },
     title: {
         fontSize: 22,
@@ -122,6 +143,21 @@ const styles = StyleSheet.create({
     reviewDate: {
         fontSize: 12,
         color: "#999",
+    },
+    reserveButton: {
+        position: "absolute",
+        bottom: 20,
+        left: 20,
+        right: 20,
+        backgroundColor: "#007AFF",
+        paddingVertical: 14,
+        borderRadius: 10,
+        alignItems: "center",
+    },
+    reserveButtonText: {
+        color: "white",
+        fontSize: 18,
+        fontWeight: "bold",
     },
 });
 
