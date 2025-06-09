@@ -1,45 +1,51 @@
 import React from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
-import mockData from "../api/storeData.json";
-import { Restaurant } from "../types/store";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
+import mockData from "../api/storeData.json";
+import defaultImg from "../../assets/defaultImg.jpeg";
 
 type Navigation = StackNavigationProp<RootStackParamList, "HomeMain">;
 
-export default function HomeScreen() {
+export default function Home() {
     const navigation = useNavigation<Navigation>();
 
-    const renderItem = ({ item }: { item: Restaurant }) => (
-        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("RestaurantDetail", { restaurant: item })}>
-            <Text style={styles.name}>{item.name}</Text>
-            <Text>
-                {item.category} · {item.address}
-            </Text>
-            <Text>⭐ {item.rating}</Text>
-        </TouchableOpacity>
-    );
-
     return (
-        <View style={styles.container}>
-            <FlatList data={mockData} keyExtractor={(item) => item.storeId} renderItem={renderItem} />
-        </View>
+        <FlatList
+            data={mockData}
+            keyExtractor={(item) => item.storeId}
+            renderItem={({ item }) => (
+                <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("RestaurantDetail", { restaurant: item })}>
+                    {item.thumbnailImg ? (
+                        <Image source={{ uri: item.thumbnailImg }} style={styles.thumbnail} />
+                    ) : (
+                        <Image source={defaultImg} style={styles.thumbnail}></Image>
+                    )}
+                    <View>
+                        <Text style={styles.name}>{item.name}</Text>
+                        <Text>{item.address}</Text>
+                        <Text>⭐ {item.rating}</Text>
+                    </View>
+                </TouchableOpacity>
+            )}
+        />
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 16 },
     card: {
-        backgroundColor: "#fff",
+        flexDirection: "row",
+        padding: 12,
+        borderBottomWidth: 1,
+        borderColor: "#ddd",
+        alignItems: "center",
+    },
+    thumbnail: {
+        width: 80,
+        height: 80,
+        marginRight: 12,
         borderRadius: 8,
-        padding: 16,
-        marginBottom: 12,
-        shadowColor: "#000",
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 4,
-        elevation: 2,
     },
     name: {
         fontSize: 18,
