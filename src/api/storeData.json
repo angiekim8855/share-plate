@@ -1,0 +1,103 @@
+[
+    {
+        "storeId": "1",
+        "name": "김밥천국",
+        "bizNumber": "25325325",
+        "thumbnailImg": "",
+        "category": "한식",
+        "address": "서울 강남구",
+        "rating": 4.5,
+        "bankAccount": "12345",
+        "closeTime": "2025-06-04T20:30:00.000Z",
+        "itemList": [
+            {
+                "itemId": "123",
+                "itemName": "참치김밥",
+                "itemImg": "",
+                "price": 1000,
+                "finalPrice": 500,
+                "addDate": "2025-06-04T10:30:00.000Z",
+                "ea": 3,
+                "orderNumberList": ["1242", "42142", "24145423"]
+            },
+            {
+                "itemId": "14213",
+                "itemName": "돈까스",
+                "itemImg": "",
+                "price": 4000,
+                "finalPrice": 1500,
+                "addDate": "2025-06-04T10:30:00.000Z",
+                "ea": 2,
+                "orderNumberList": []
+            },
+            {
+                "itemId": "153253223",
+                "itemName": "쫄면",
+                "itemImg": "",
+                "price": 1000,
+                "finalPrice": 500,
+                "addDate": "2025-06-04T10:30:00.000Z",
+                "ea": 1,
+                "orderNumberList": ["1242"]
+            }
+        ],
+        "reviewList": [
+            {
+                "img": "https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=600&q=80",
+                "userName": "앤지",
+                "orderNumber": "21421532",
+                "reviewId": "321231",
+                "reviewDetail": "김밥 저렴하게 먹엇는데 넘 맛있었어요!",
+                "date": "2025-06-04T10:30:00.000Z"
+            },
+            {
+                "img": "",
+                "userName": "앤지",
+                "orderNumber": "21421532",
+                "reviewId": "321231",
+                "reviewDetail": "김밥 저렴하게 먹엇는데 넘 맛있었어요!",
+                "date": "2025-06-04T10:30:00.000Z"
+            },
+            {
+                "img": "",
+                "userName": "앤지",
+                "orderNumber": "21421532",
+                "reviewId": "321231",
+                "reviewDetail": "김밥 저렴하게 먹엇는데 넘 맛있었어요!",
+                "date": "2025-06-04T10:30:00.000Z"
+            },
+            {
+                "img": "",
+                "userName": "앤지",
+                "orderNumber": "21421532",
+                "reviewId": "321231",
+                "reviewDetail": "김밥 저렴하게 먹엇는데 넘 맛있었어요!",
+                "date": "2025-06-04T10:30:00.000Z"
+            }
+        ]
+    },
+    {
+        "storeId": "3",
+        "name": "금화돈까스",
+        "bizNumber": "124215325",
+        "thumbnailImg": "",
+        "category": "한식",
+        "address": "서울 동대문구",
+        "rating": 4.8,
+        "bankAccount": "12345",
+        "closeTime": "2025-06-04T20:30:00.000Z",
+        "itemList": [
+            {
+                "itemId": "123",
+                "itemName": "",
+                "itemImg": "",
+                "price": 1000,
+                "finalPrice": 500,
+                "addDate": "2025-06-04T10:30:00.000Z",
+                "ea": 3,
+                "orderNumberList": ["1242", "42142", "24145423"]
+            }
+        ],
+        "reviewList": [{ "img": "", "userName": "", "orderNumber": "", "reviewId": "", "reviewDetail": "", "date": "2025-06-04T10:30:00.000Z" }]
+    }
+]
