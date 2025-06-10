@@ -12,16 +12,17 @@ interface Props {
         itemImg?: string;
         price: number;
         finalPrice: number;
+        ea: number;
     }[];
 }
 
 const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) => {
     const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
 
-    const increase = (itemId: string) => {
+    const increase = (itemId: string, ea: number) => {
         setQuantities((prev) => ({
             ...prev,
-            [itemId]: (prev[itemId] || 0) + 1,
+            [itemId]: Math.min(ea, (prev[itemId] || 0) + 1),
         }));
     };
 
@@ -58,14 +59,24 @@ const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) 
                                     <Text style={styles.originalPrice}>₩{formatPrice(menuItem.price)}</Text>
                                     <Text style={styles.finalPrice}>₩{formatPrice(menuItem.finalPrice)}</Text>
                                 </View>
-                                <View style={styles.quantityRow}>
-                                    <TouchableOpacity onPress={() => decrease(menuItem.itemId)} style={styles.qButton}>
-                                        <Text style={styles.qText}>-</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.qText}>{quantities[menuItem.itemId] || 0}</Text>
-                                    <TouchableOpacity onPress={() => increase(menuItem.itemId)} style={styles.qButton}>
-                                        <Text style={styles.qText}>+</Text>
-                                    </TouchableOpacity>
+                                <View style={styles.quantityContainer}>
+                                    <Text style={styles.availableText}>남은 수량: {menuItem.ea}개</Text>
+                                    <View style={styles.quantityRow}>
+                                        <TouchableOpacity onPress={() => decrease(menuItem.itemId)} style={styles.qButton}>
+                                            <Text style={styles.qText}>-</Text>
+                                        </TouchableOpacity>
+                                        <Text style={styles.qText}>{quantities[menuItem.itemId] || 0}</Text>
+                                        <TouchableOpacity 
+                                            onPress={() => increase(menuItem.itemId, menuItem.ea)} 
+                                            style={[
+                                                styles.qButton,
+                                                (quantities[menuItem.itemId] || 0) >= menuItem.ea && styles.disabledButton
+                                            ]}
+                                            disabled={(quantities[menuItem.itemId] || 0) >= menuItem.ea}
+                                        >
+                                            <Text style={styles.qText}>+</Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
                             </View>
                         </View>
@@ -143,6 +154,15 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
         color: "#E53935",
+    },
+    quantityContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    availableText: {
+        fontSize: 14,
+        color: '#666',
     },
     quantityRow: {
         flexDirection: "row",
