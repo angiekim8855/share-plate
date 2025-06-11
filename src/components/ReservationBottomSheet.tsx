@@ -66,12 +66,9 @@ const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) 
                                             <Text style={styles.qText}>-</Text>
                                         </TouchableOpacity>
                                         <Text style={styles.qText}>{quantities[menuItem.itemId] || 0}</Text>
-                                        <TouchableOpacity 
-                                            onPress={() => increase(menuItem.itemId, menuItem.ea)} 
-                                            style={[
-                                                styles.qButton,
-                                                (quantities[menuItem.itemId] || 0) >= menuItem.ea && styles.disabledButton
-                                            ]}
+                                        <TouchableOpacity
+                                            onPress={() => increase(menuItem.itemId, menuItem.ea)}
+                                            style={[styles.qButton, (quantities[menuItem.itemId] || 0) >= menuItem.ea && styles.disabledButton]}
                                             disabled={(quantities[menuItem.itemId] || 0) >= menuItem.ea}
                                         >
                                             <Text style={styles.qText}>+</Text>
@@ -117,6 +114,7 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         maxHeight: "70%",
+        minHeight: 200,
     },
     menuItem: {
         flexDirection: "row",
@@ -156,13 +154,13 @@ const styles = StyleSheet.create({
         color: "#E53935",
     },
     quantityContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
     },
     availableText: {
         fontSize: 14,
-        color: '#666',
+        color: "#666",
     },
     quantityRow: {
         flexDirection: "row",
