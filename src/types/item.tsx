@@ -5,6 +5,5 @@ export type Item = {
     price: number;
     finalPrice: number;
     addDate: string;
-    ea: number;
-    orderNumberList: string[];
+    stock: number;
 };

@@ -8,6 +8,7 @@ export type Restaurant = {
     bizNumber: string;
     category: string;
     address: string;
+    phone: string;
     rating: number;
     bankAccount: string;
     closeTime: string;
