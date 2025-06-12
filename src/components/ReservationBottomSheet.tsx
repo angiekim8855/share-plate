@@ -12,17 +12,17 @@ interface Props {
         itemImg?: string;
         price: number;
         finalPrice: number;
-        ea: number;
+        stock: number;
     }[];
 }
 
 const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) => {
     const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
 
-    const increase = (itemId: string, ea: number) => {
+    const increase = (itemId: string, stock: number) => {
         setQuantities((prev) => ({
             ...prev,
-            [itemId]: Math.min(ea, (prev[itemId] || 0) + 1),
+            [itemId]: Math.min(stock, (prev[itemId] || 0) + 1),
         }));
     };
 
@@ -60,16 +60,16 @@ const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) 
                                     <Text style={styles.finalPrice}>₩{formatPrice(menuItem.finalPrice)}</Text>
                                 </View>
                                 <View style={styles.quantityContainer}>
-                                    <Text style={styles.availableText}>남은 수량: {menuItem.ea}개</Text>
+                                    <Text style={styles.availableText}>남은 수량: {menuItem.stock}개</Text>
                                     <View style={styles.quantityRow}>
                                         <TouchableOpacity onPress={() => decrease(menuItem.itemId)} style={styles.qButton}>
                                             <Text style={styles.qText}>-</Text>
                                         </TouchableOpacity>
                                         <Text style={styles.qText}>{quantities[menuItem.itemId] || 0}</Text>
                                         <TouchableOpacity
-                                            onPress={() => increase(menuItem.itemId, menuItem.ea)}
-                                            style={[styles.qButton, (quantities[menuItem.itemId] || 0) >= menuItem.ea && styles.disabledButton]}
-                                            disabled={(quantities[menuItem.itemId] || 0) >= menuItem.ea}
+                                            onPress={() => increase(menuItem.itemId, menuItem.stock)}
+                                            style={[styles.qButton, (quantities[menuItem.itemId] || 0) >= menuItem.stock && styles.disabledButton]}
+                                            disabled={(quantities[menuItem.itemId] || 0) >= menuItem.stock}
                                         >
                                             <Text style={styles.qText}>+</Text>
                                         </TouchableOpacity>
