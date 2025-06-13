@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import Modal from "react-native-modal";
+import { formatPrice } from "../utils/util";
 
 interface Props {
     isVisible: boolean;
     onClose: () => void;
-    onConfirm: (itemList: { itemId: string; quantity: number; finalPrice: number }[], totalPrice: number) => void;
+    onConfirm: (itemList: { itemId: string; itemName: string; quantity: number; finalPrice: number }[], totalPrice: number) => void;
     item: {
         itemId: string;
         itemName: string;
@@ -33,8 +34,6 @@ const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) 
         }));
     };
 
-    const formatPrice = (value: number) => value.toLocaleString();
-
     const getTotalPrice = () => {
         return item.reduce((total, item) => {
             const quantity = quantities[item.itemId] || 0;
@@ -47,6 +46,7 @@ const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) 
             .filter((item) => quantities[item.itemId] > 0)
             .map((item) => ({
                 itemId: item.itemId,
+                itemName: item.itemName,
                 quantity: quantities[item.itemId],
                 finalPrice: item.finalPrice,
             }));
