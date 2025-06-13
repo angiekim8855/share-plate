@@ -1,36 +1,75 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Image, ScrollView, SafeAreaView, TouchableOpacity } from "react-native";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert } from "react-native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/types";
 import ReservationBottomSheet from "../components/ReservationBottomSheet";
+import { createReservation } from "../services/reservation";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { FallbackImage } from "../components/FallbackImage";
+import { Reservation } from "../types/reservation";
+import { generateOrderNumber } from "../utils/util";
 
 type RestaurantDetailRouteProp = RouteProp<RootStackParamList, "RestaurantDetail">;
+type Navigation = StackNavigationProp<RootStackParamList, "RestaurantDetail">;
 
 export default function RestaurantDetail() {
+    const navigation = useNavigation<Navigation>();
+
     const route = useRoute<RestaurantDetailRouteProp>();
     const { restaurant } = route.params;
-
     const [modalVisible, setModalVisible] = useState(false);
+
+    // 예약하기 버튼 눌렀을 때
+    const handleReserve = async (itemList: { itemId: string; quantity: number; finalPrice: number }[], totalPrice: number) => {
+        try {
+            const reservationData: Reservation = {
+                orderNumber: generateOrderNumber(),
+                userId: "1253464264",
+                userName: "앤지",
+                storeId: restaurant.storeId,
+                storeName: restaurant.name,
+                reservationDate: new Date().toISOString().split("T")[0], // Format as YYYY-MM-DD
+                itemList: itemList,
+                totalPrice: totalPrice,
+                orderStatus: "pending", // 초기 상태
+            };
+            const reservationId = await createReservation(reservationData);
+
+            Alert.alert("예약 완료", `예약이 정상적으로 완료되었습니다!\n예약 번호: ${reservationId}`, [
+                {
+                    text: "확인",
+                    onPress: () => {
+                        navigation.navigate("Main", {
+                            screen: "Reservation"
+                        });
+                    },
+                },
+            ]);
+        } catch (error) {
+            Alert.alert("오류 발생", "잠시 후 다시 시도해주세요.");
+        }
+    };
 
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <Text style={styles.title}>{restaurant.name}</Text>
                 <Text>📍 {restaurant.address}</Text>
+                <Text>📞 {restaurant.phone}</Text>
                 <Text>⭐ {restaurant.rating}</Text>
                 <Text>⏰ 마감 시간: {new Date(restaurant.closeTime).toLocaleTimeString()}</Text>
 
                 <Text style={styles.sectionTitle}>📋 메뉴</Text>
                 {restaurant.itemList.map((item) => (
                     <View key={item.itemId} style={styles.menuItem}>
-                        <Image source={item.itemImg ? item.itemImg : require("../../assets/default-food.jpeg")} style={styles.image} />
+                        <FallbackImage uri={item.itemImg} style={styles.image} defaultImg={require("../../assets/default-food.jpeg")} />
                         <View style={styles.menuText}>
                             <Text>{item.itemName || "메뉴 이름 없음"}</Text>
                             <View style={styles.priceContainer}>
                                 <Text style={styles.originalPrice}>{item.price.toLocaleString()}원</Text>
                                 <Text style={styles.discountPrice}>{item.finalPrice.toLocaleString()}원</Text>
                             </View>
-                            <Text>수량: {item.ea}</Text>
+                            <Text>수량: {item.stock}</Text>
                         </View>
                     </View>
                 ))}
@@ -38,7 +77,7 @@ export default function RestaurantDetail() {
                 <Text style={styles.sectionTitle}>📝 리뷰</Text>
                 {restaurant.reviewList.map((review, index) => (
                     <View style={styles.reviewContainer} key={`${review.reviewId}-${index}`}>
-                        {review.img && <Image source={{ uri: review.img }} style={styles.reviewImage} />}
+                        <FallbackImage uri={review.img} style={styles.reviewImage} />
                         <View style={styles.reviewContent}>
                             <Text style={styles.userName}>{review.userName || "익명"}</Text>
                             <Text style={styles.reviewDetail}>{review.reviewDetail}</Text>
@@ -53,8 +92,8 @@ export default function RestaurantDetail() {
             <ReservationBottomSheet
                 isVisible={modalVisible}
                 onClose={() => setModalVisible(false)}
-                onConfirm={(quantities) => {
-                    console.log('예약 수량:', quantities);
+                onConfirm={(itemList, totalPrice) => {
+                    handleReserve(itemList, totalPrice);
                     setModalVisible(false);
                 }}
                 item={restaurant.itemList}
