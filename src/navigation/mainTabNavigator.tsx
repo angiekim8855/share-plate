@@ -1,7 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "../screens/Home";
-import Reservation from "../screens/Reservation";
+import { Reservation } from "../screens/Reservation";
 import Mypage from "../screens/Mypage";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import RestaurantDetail from "../screens/RestaurantDetail";

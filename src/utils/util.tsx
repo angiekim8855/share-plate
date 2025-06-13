@@ -4,3 +4,5 @@ export const generateOrderNumber = () => {
     const randomSuffix = Math.floor(1000 + Math.random() * 9000); // 4자리 랜덤 숫자
     return `ORD${yyyyMMdd}-${randomSuffix}`;
 };
+
+export const formatPrice = (value: number) => value.toLocaleString();
