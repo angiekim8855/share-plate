@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
 
-type Navigation = StackNavigationProp<RootStackParamList, "Login">;
+type Navigation = StackNavigationProp<RootStackParamList, "HomeMain">;
 
 export default function Login() {
     const navigation = useNavigation<Navigation>();

@@ -20,7 +20,7 @@ export default function RestaurantDetail() {
     const [modalVisible, setModalVisible] = useState(false);
 
     // 예약하기 버튼 눌렀을 때
-    const handleReserve = async (itemList: { itemId: string; quantity: number; finalPrice: number }[], totalPrice: number) => {
+    const handleReserve = async (itemList: { itemId: string; itemName: string; quantity: number; finalPrice: number }[], totalPrice: number) => {
         try {
             const reservationData: Reservation = {
                 orderNumber: generateOrderNumber(),
@@ -40,7 +40,7 @@ export default function RestaurantDetail() {
                     text: "확인",
                     onPress: () => {
                         navigation.navigate("Main", {
-                            screen: "Reservation"
+                            screen: "Reservation",
                         });
                     },
                 },
@@ -199,12 +199,3 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
 });
-
-// const styles = StyleSheet.create({
-//     container: { padding: 20 },
-//     title: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
-//     sectionTitle: { fontSize: 18, fontWeight: "bold", marginTop: 20, marginBottom: 10 },
-//     item: { marginBottom: 10 },
-//     review: { marginBottom: 15, paddingBottom: 10, borderBottomWidth: 0.5, borderColor: "#ccc" },
-//     image: { width: 100, height: 100, marginBottom: 5 },
-// });
