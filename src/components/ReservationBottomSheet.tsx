@@ -5,7 +5,7 @@ import Modal from "react-native-modal";
 interface Props {
     isVisible: boolean;
     onClose: () => void;
-    onConfirm: (quantities: { [key: string]: number }) => void;
+    onConfirm: (itemList: { itemId: string; quantity: number; finalPrice: number }[], totalPrice: number) => void;
     item: {
         itemId: string;
         itemName: string;
@@ -40,6 +40,17 @@ const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) 
             const quantity = quantities[item.itemId] || 0;
             return total + item.finalPrice * quantity;
         }, 0);
+    };
+
+    const handleConfirm = () => {
+        const itemList = item
+            .filter((item) => quantities[item.itemId] > 0)
+            .map((item) => ({
+                itemId: item.itemId,
+                quantity: quantities[item.itemId],
+                finalPrice: item.finalPrice,
+            }));
+        onConfirm(itemList, getTotalPrice());
     };
 
     return (
@@ -83,7 +94,7 @@ const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) 
                     <Text style={styles.totalPrice}>총 금액: ₩{formatPrice(getTotalPrice())}</Text>
                     <TouchableOpacity
                         style={[styles.confirmButton, getTotalPrice() === 0 && styles.disabledButton]}
-                        onPress={() => onConfirm(quantities)}
+                        onPress={handleConfirm}
                         disabled={getTotalPrice() === 0}
                     >
                         <Text style={styles.confirmText}>예약하기</Text>
