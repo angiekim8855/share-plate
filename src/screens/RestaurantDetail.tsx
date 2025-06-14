@@ -28,7 +28,7 @@ export default function RestaurantDetail() {
                 userName: "앤지",
                 storeId: restaurant.storeId,
                 storeName: restaurant.name,
-                reservationDate: new Date().toISOString().split("T")[0], // Format as YYYY-MM-DD
+                reservationDate: new Date().toISOString(),
                 itemList: itemList,
                 totalPrice: totalPrice,
                 orderStatus: "pending", // 초기 상태
