@@ -19,7 +19,7 @@ export function Reservation() {
     const fetchReservations = async () => {
         setLoading(true);
         try {
-            const q = query(collection(db, "reservations"), where("userId", "==", userId));
+            const q = query(collection(db, "reservations"), where("userId", "==", userId), orderBy("reservationDate", "desc"));
             const snapshot = await getDocs(q);
             const resList: Reservation[] = [];
 
@@ -51,7 +51,7 @@ export function Reservation() {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>나의 예약 리스트</Text>
-            <ScrollView style={styles.container}>
+            <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 50 }}>
                 {reservations && reservations.length > 0 ? (
                     reservations.map((item, idx) => (
                         <View key={item.id} style={styles.card}>
@@ -79,7 +79,7 @@ export function Reservation() {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
+        padding: 10,
     },
     loadingContainer: {
         flex: 1,
@@ -89,28 +89,40 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontWeight: "bold",
-        marginBottom: 20,
+        padding: 10,
     },
     card: {
-        marginBottom: 20,
-        padding: 10,
-        backgroundColor: "#f5f5f5",
-        borderRadius: 10,
+        backgroundColor: "#ffffff",
+        padding: 20,
+        marginBottom: 15,
+        borderRadius: 12,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 6,
+        elevation: 3,
+        borderWidth: 1,
+        borderColor: "#eee",
     },
     storeName: {
         fontSize: 18,
         fontWeight: "bold",
-        marginBottom: 5,
-    },
-    date: {
-        color: "#666",
+        color: "#333",
         marginBottom: 10,
     },
+    date: {
+        color: "#888",
+        marginBottom: 10,
+        fontSize: 14,
+    },
     menuItem: {
+        color: "#555",
+        fontSize: 15,
+        marginBottom: 5,
+        paddingLeft: 10,
+        borderLeftWidth: 2,
+        borderLeftColor: "#ff9900",
         flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 4,
     },
     menuName: {
         flex: 2,
