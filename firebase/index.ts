@@ -1,8 +1,6 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration -> Firebase가 만든 '내 프로젝트 정보'를 담은 접속키
 const firebaseConfig = {
@@ -16,5 +14,5 @@ const firebaseConfig = {
 
 // Initialize Firebase -> Firebase JS SDK가 내 Firebase 콘솔의 프로젝트에 연결
 const app = initializeApp(firebaseConfig);
-
 export const db = getFirestore(app);
+// export const auth = getAuth(app);
