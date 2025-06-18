@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
 import mockData from "../api/storeData.json";
-import defaultImg from "../../assets/defaultImg.jpeg";
+import { FallbackImage } from "../components/FallbackImage";
 
 type Navigation = StackNavigationProp<RootStackParamList, "HomeMain">;
 
@@ -17,11 +17,7 @@ export default function Home() {
             keyExtractor={(item) => item.storeId}
             renderItem={({ item }) => (
                 <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("RestaurantDetail", { restaurant: item })}>
-                    {item.thumbnailImg ? (
-                        <Image source={{ uri: item.thumbnailImg }} style={styles.thumbnail} />
-                    ) : (
-                        <Image source={defaultImg} style={styles.thumbnail}></Image>
-                    )}
+                    <FallbackImage uri={item.thumbnailImg} style={styles.thumbnail} defaultImg={require("../../assets/defaultImg.jpeg")} />
                     <View>
                         <Text style={styles.name}>{item.name}</Text>
                         <Text>{item.address}</Text>

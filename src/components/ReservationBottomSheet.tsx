@@ -1,28 +1,29 @@
 import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import Modal from "react-native-modal";
+import { formatPrice } from "../utils/util";
 
 interface Props {
     isVisible: boolean;
     onClose: () => void;
-    onConfirm: (quantities: { [key: string]: number }) => void;
+    onConfirm: (itemList: { itemId: string; itemName: string; quantity: number; finalPrice: number }[], totalPrice: number) => void;
     item: {
         itemId: string;
         itemName: string;
         itemImg?: string;
         price: number;
         finalPrice: number;
-        ea: number;
+        stock: number;
     }[];
 }
 
 const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) => {
     const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
 
-    const increase = (itemId: string, ea: number) => {
+    const increase = (itemId: string, stock: number) => {
         setQuantities((prev) => ({
             ...prev,
-            [itemId]: Math.min(ea, (prev[itemId] || 0) + 1),
+            [itemId]: Math.min(stock, (prev[itemId] || 0) + 1),
         }));
     };
 
@@ -33,13 +34,23 @@ const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) 
         }));
     };
 
-    const formatPrice = (value: number) => value.toLocaleString();
-
     const getTotalPrice = () => {
         return item.reduce((total, item) => {
             const quantity = quantities[item.itemId] || 0;
             return total + item.finalPrice * quantity;
         }, 0);
+    };
+
+    const handleConfirm = () => {
+        const itemList = item
+            .filter((item) => quantities[item.itemId] > 0)
+            .map((item) => ({
+                itemId: item.itemId,
+                itemName: item.itemName,
+                quantity: quantities[item.itemId],
+                finalPrice: item.finalPrice,
+            }));
+        onConfirm(itemList, getTotalPrice());
     };
 
     return (
@@ -60,19 +71,16 @@ const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) 
                                     <Text style={styles.finalPrice}>₩{formatPrice(menuItem.finalPrice)}</Text>
                                 </View>
                                 <View style={styles.quantityContainer}>
-                                    <Text style={styles.availableText}>남은 수량: {menuItem.ea}개</Text>
+                                    <Text style={styles.availableText}>남은 수량: {menuItem.stock}개</Text>
                                     <View style={styles.quantityRow}>
                                         <TouchableOpacity onPress={() => decrease(menuItem.itemId)} style={styles.qButton}>
                                             <Text style={styles.qText}>-</Text>
                                         </TouchableOpacity>
                                         <Text style={styles.qText}>{quantities[menuItem.itemId] || 0}</Text>
-                                        <TouchableOpacity 
-                                            onPress={() => increase(menuItem.itemId, menuItem.ea)} 
-                                            style={[
-                                                styles.qButton,
-                                                (quantities[menuItem.itemId] || 0) >= menuItem.ea && styles.disabledButton
-                                            ]}
-                                            disabled={(quantities[menuItem.itemId] || 0) >= menuItem.ea}
+                                        <TouchableOpacity
+                                            onPress={() => increase(menuItem.itemId, menuItem.stock)}
+                                            style={[styles.qButton, (quantities[menuItem.itemId] || 0) >= menuItem.stock && styles.disabledButton]}
+                                            disabled={(quantities[menuItem.itemId] || 0) >= menuItem.stock}
                                         >
                                             <Text style={styles.qText}>+</Text>
                                         </TouchableOpacity>
@@ -86,7 +94,7 @@ const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) 
                     <Text style={styles.totalPrice}>총 금액: ₩{formatPrice(getTotalPrice())}</Text>
                     <TouchableOpacity
                         style={[styles.confirmButton, getTotalPrice() === 0 && styles.disabledButton]}
-                        onPress={() => onConfirm(quantities)}
+                        onPress={handleConfirm}
                         disabled={getTotalPrice() === 0}
                     >
                         <Text style={styles.confirmText}>예약하기</Text>
@@ -117,6 +125,7 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         maxHeight: "70%",
+        minHeight: 200,
     },
     menuItem: {
         flexDirection: "row",
@@ -156,13 +165,13 @@ const styles = StyleSheet.create({
         color: "#E53935",
     },
     quantityContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
     },
     availableText: {
         fontSize: 14,
-        color: '#666',
+        color: "#666",
     },
     quantityRow: {
         flexDirection: "row",
