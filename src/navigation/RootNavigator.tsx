@@ -6,7 +6,7 @@ import AuthStackNavigator from "./AuthStackNavigator";
 const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
-    const isLoggedIn = true; // 나중에 context로 바꾸면 좋아
+    const isLoggedIn = false; // 나중에 context로 바꾸면 좋아
 
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>

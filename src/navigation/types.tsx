@@ -9,7 +9,9 @@ export type MainTabParamList = {
 
 export type RootStackParamList = {
     Login: undefined;
+    Signup: undefined;
     Main: NavigatorScreenParams<MainTabParamList>;
     HomeMain: undefined;
     RestaurantDetail: { restaurant: Restaurant };
 };
+
