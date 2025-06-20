@@ -2,8 +2,8 @@ import React from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../navigation/types";
-import { authStyles } from "../styles/authStyles";
+import { RootStackParamList } from "../../navigation/types";
+import { authStyles } from "../../styles/authStyles";
 
 type Navigation = StackNavigationProp<RootStackParamList, "HomeMain">;
 
