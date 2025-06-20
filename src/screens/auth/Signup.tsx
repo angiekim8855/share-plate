@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../navigation/types";
-import { authStyles } from "../styles/authStyles";
 import { Picker } from "@react-native-picker/picker";
 import { doc, setDoc } from "firebase/firestore";
-import { db } from "../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { RootStackParamList } from "../../navigation/types";
+import { authStyles } from "../../styles/authStyles";
 
 type Navigation = StackNavigationProp<RootStackParamList>;
 
