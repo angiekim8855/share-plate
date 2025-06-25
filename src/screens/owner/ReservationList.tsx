@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Text, StyleSheet, ScrollView } from "react-native";
 import StoreRegisterModal from "../../components/StoreRegisterModal";
 
 export default function ReservationList() {
-    const isStoreNotResistered = true;
+    const [isStoreNotResistered, setIsStoreNotResistered] = useState<boolean>(true);
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -11,7 +11,7 @@ export default function ReservationList() {
             {/* 여기에 예약 카드 목록 map으로 렌더링 */}
 
             {/* 가게 등록 모달 */}
-            <StoreRegisterModal isVisible={isStoreNotResistered} />
+            <StoreRegisterModal isVisible={isStoreNotResistered} onClose={() => setIsStoreNotResistered(false)} />
         </ScrollView>
     );
 }
