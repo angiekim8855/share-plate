@@ -6,3 +6,5 @@ export const generateOrderNumber = () => {
 };
 
 export const formatPrice = (value: number) => value.toLocaleString();
+
+export const randomId = () => Math.random().toString(36).substr(2, 9);
