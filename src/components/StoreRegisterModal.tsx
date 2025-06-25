@@ -85,7 +85,7 @@ export default function StoreRegisterModal({ isVisible, onClose }: any) {
                 address,
                 phone,
                 bankAccount,
-                closingTime: closingTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+                closingTime: closingTime.toISOString(),
                 itemList: [],
                 reviewList: [],
             };
