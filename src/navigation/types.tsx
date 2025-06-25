@@ -1,4 +1,4 @@
-import { Restaurant } from "../types/store";
+import { Store } from "../types/store";
 import { NavigatorScreenParams } from "@react-navigation/native";
 
 export type MainTabParamList = {
@@ -12,6 +12,5 @@ export type RootStackParamList = {
     Signup: undefined;
     Main: NavigatorScreenParams<MainTabParamList>;
     HomeMain: undefined;
-    RestaurantDetail: { restaurant: Restaurant };
+    RestaurantDetail: { store: Store };
 };
-
