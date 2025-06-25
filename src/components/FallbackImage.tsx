@@ -8,6 +8,7 @@ type FallbackImageProps = {
     resizeMode?: ImageResizeMode;
 };
 
+// 디폴트 이미지 기능
 export const FallbackImage: React.FC<FallbackImageProps> = ({ uri, style, defaultImg, resizeMode = "cover" }) => {
     const [error, setError] = useState(false);
 
