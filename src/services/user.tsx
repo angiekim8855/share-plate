@@ -18,7 +18,7 @@ export const createStore = async ({ storeData, storeId }: StorePropsType) => {
     }
 };
 
-export const addMenuToStore = async (storeId: string, menuData: any) => {
+export const addItemToStore = async (storeId: string, menuData: any) => {
     try {
         const storeRef = doc(db, "store", storeId); // store 테이블 접근
 
