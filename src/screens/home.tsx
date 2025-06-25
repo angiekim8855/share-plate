@@ -1,31 +1,72 @@
-import React from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
-import mockData from "../api/storeData.json";
 import { FallbackImage } from "../components/FallbackImage";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebase";
+import { Store } from "../types/store";
 
 type Navigation = StackNavigationProp<RootStackParamList, "HomeMain">;
 
 export default function Home() {
     const navigation = useNavigation<Navigation>();
+    const [storeList, setStoreList] = useState<Store[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchStores = async () => {
+        try {
+            setLoading(true); // 로딩 시작
+            const querySnapshot = await getDocs(collection(db, "store"));
+            const stores: Store[] = querySnapshot.docs.map((doc) => {
+                const data = doc.data();
+                return {
+                    thumbnailImg: data.thumbnailImg ?? "",
+                    storeId: data.storeId ?? doc.id,
+                    storeName: data.storeName ?? "",
+                    businessNumber: data.businessNumber ?? "",
+                    category: data.category ?? "",
+                    address: data.address ?? "",
+                    phone: data.phone ?? "",
+                    bankAccount: data.bankAccount ?? "",
+                    closingTime: data.closingTime ?? "",
+                    itemList: data.itemList ?? [],
+                    reviewList: data.reviewList ?? [],
+                } as Store;
+            });
+            setStoreList(stores);
+        } catch (error) {
+            console.error("데이터 가져오기 실패", error);
+        } finally {
+            setLoading(false); // 로딩 종료
+        }
+    };
+
+    useEffect(() => {
+        fetchStores();
+    }, []);
 
     return (
-        <FlatList
-            data={mockData}
-            keyExtractor={(item) => item.storeId}
-            renderItem={({ item }) => (
-                <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("RestaurantDetail", { restaurant: item })}>
-                    <FallbackImage uri={item.thumbnailImg} style={styles.thumbnail} defaultImg={require("../../assets/defaultImg.jpeg")} />
-                    <View>
-                        <Text style={styles.name}>{item.name}</Text>
-                        <Text>{item.address}</Text>
-                        <Text>⭐ {item.rating}</Text>
-                    </View>
-                </TouchableOpacity>
+        <View>
+            {loading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+                <FlatList
+                    data={storeList}
+                    keyExtractor={(item) => item.storeId}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("RestaurantDetail", { store: item })}>
+                            <FallbackImage uri={item.thumbnailImg} style={styles.thumbnail} defaultImg={require("../../assets/defaultImg.jpeg")} />
+                            <View>
+                                <Text style={styles.name}>{item.storeName}</Text>
+                                <Text>{item.address}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}
+                />
             )}
-        />
+        </View>
     );
 }
 
