@@ -16,7 +16,7 @@ export default function RestaurantDetail() {
     const navigation = useNavigation<Navigation>();
 
     const route = useRoute<RestaurantDetailRouteProp>();
-    const { restaurant } = route.params;
+    const { store } = route.params;
     const [modalVisible, setModalVisible] = useState(false);
 
     // 예약하기 버튼 눌렀을 때
@@ -26,8 +26,8 @@ export default function RestaurantDetail() {
                 orderNumber: generateOrderNumber(),
                 userId: "1253464264",
                 userName: "앤지",
-                storeId: restaurant.storeId,
-                storeName: restaurant.name,
+                storeId: store.storeId,
+                storeName: store.storeName,
                 reservationDate: new Date().toISOString(),
                 itemList: itemList,
                 totalPrice: totalPrice,
@@ -53,38 +53,47 @@ export default function RestaurantDetail() {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
-                <Text style={styles.title}>{restaurant.name}</Text>
-                <Text>📍 {restaurant.address}</Text>
-                <Text>📞 {restaurant.phone}</Text>
-                <Text>⭐ {restaurant.rating}</Text>
-                <Text>⏰ 마감 시간: {new Date(restaurant.closeTime).toLocaleTimeString()}</Text>
+                <Text style={styles.title}>{store.storeName}</Text>
+                <Text style={styles.subtitle}>📍 {store.address}</Text>
+                <Text style={styles.subtitle}>📞 {store.phone}</Text>
+                <Text style={styles.subtitle}>
+                    ⏰ 마감 시간: {new Date(store.closingTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </Text>
 
                 <Text style={styles.sectionTitle}>📋 메뉴</Text>
-                {restaurant.itemList.map((item) => (
-                    <View key={item.itemId} style={styles.menuItem}>
-                        <FallbackImage uri={item.itemImg} style={styles.image} defaultImg={require("../../assets/default-food.jpeg")} />
-                        <View style={styles.menuText}>
-                            <Text>{item.itemName || "메뉴 이름 없음"}</Text>
-                            <View style={styles.priceContainer}>
-                                <Text style={styles.originalPrice}>{item.price.toLocaleString()}원</Text>
-                                <Text style={styles.discountPrice}>{item.finalPrice.toLocaleString()}원</Text>
+                {store.itemList.length > 0 ? (
+                    store.itemList.map((item) => (
+                        <View key={item.itemId} style={styles.menuItem}>
+                            <FallbackImage uri={item.itemImg} style={styles.image} defaultImg={require("../../assets/default-food.jpeg")} />
+                            <View style={styles.menuText}>
+                                <Text>{item.itemName || "메뉴 이름 없음"}</Text>
+                                <View style={styles.priceContainer}>
+                                    <Text style={styles.originalPrice}>{item.price.toLocaleString()}원</Text>
+                                    <Text style={styles.discountPrice}>{item.finalPrice.toLocaleString()}원</Text>
+                                </View>
+                                <Text>수량: {item.stock}</Text>
                             </View>
-                            <Text>수량: {item.stock}</Text>
                         </View>
-                    </View>
-                ))}
+                    ))
+                ) : (
+                    <Text style={styles.noDataText}>등록된 메뉴가 없습니다.</Text>
+                )}
 
                 <Text style={styles.sectionTitle}>📝 리뷰</Text>
-                {restaurant.reviewList.map((review, index) => (
-                    <View style={styles.reviewContainer} key={`${review.reviewId}-${index}`}>
-                        <FallbackImage uri={review.img} style={styles.reviewImage} />
-                        <View style={styles.reviewContent}>
-                            <Text style={styles.userName}>{review.userName || "익명"}</Text>
-                            <Text style={styles.reviewDetail}>{review.reviewDetail}</Text>
-                            <Text style={styles.reviewDate}>{new Date(review.date).toLocaleDateString()}</Text>
+                {store.reviewList.length > 0 ? (
+                    store.reviewList.map((review, index) => (
+                        <View style={styles.reviewContainer} key={`${review.reviewId}-${index}`}>
+                            <FallbackImage uri={review.img} style={styles.reviewImage} />
+                            <View style={styles.reviewContent}>
+                                <Text style={styles.userName}>{review.userName || "익명"}</Text>
+                                <Text style={styles.reviewDetail}>{review.reviewDetail}</Text>
+                                <Text style={styles.reviewDate}>{new Date(review.date).toLocaleDateString()}</Text>
+                            </View>
                         </View>
-                    </View>
-                ))}
+                    ))
+                ) : (
+                    <Text style={styles.noDataText}>등록된 리뷰가 없습니다.</Text>
+                )}
             </ScrollView>
             <TouchableOpacity style={styles.reserveButton} onPress={() => setModalVisible(true)}>
                 <Text style={styles.reserveButtonText}>예약하기</Text>
@@ -96,7 +105,7 @@ export default function RestaurantDetail() {
                     handleReserve(itemList, totalPrice);
                     setModalVisible(false);
                 }}
-                item={restaurant.itemList}
+                item={store.itemList}
             />
         </SafeAreaView>
     );
@@ -113,13 +122,13 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 22,
         fontWeight: "bold",
+        marginBottom: 10,
     },
     subtitle: {
-        marginBottom: 12,
-        color: "gray",
+        marginBottom: 3,
     },
     sectionTitle: {
-        marginTop: 16,
+        marginTop: 30,
         fontSize: 18,
         fontWeight: "600",
     },
@@ -197,5 +206,12 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 18,
         fontWeight: "bold",
+    },
+    noDataText: {
+        textAlign: "center",
+        marginTop: 50,
+        fontSize: 16,
+        color: "#999",
+        fontWeight: "500",
     },
 });
