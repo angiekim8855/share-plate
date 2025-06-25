@@ -2,18 +2,18 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { storage } from "../../firebase";
-import { Alert, Button, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View, StyleSheet } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View, StyleSheet } from "react-native";
 import Modal from "react-native-modal";
 import ImageUploader from "./ImageUploader";
-import { addMenuToStore } from "../services/user";
+import { addItemToStore } from "../services/user";
 
 export default function MenuRegisterModal({ isVisible, onClose, storeId }: any) {
     const [imageUri, setImageUri] = useState("");
     const [uploading, setUploading] = useState(false);
-    const [menuName, setMenuName] = useState("");
+    const [itemName, setItemName] = useState("");
     const [originalPrice, setOriginalPrice] = useState("");
     const [discountPrice, setDiscountPrice] = useState("");
-    const [quantity, setQuantity] = useState("");
+    const [stock, setStock] = useState("");
 
     const uploadImage = async (uri: string) => {
         try {
@@ -34,7 +34,7 @@ export default function MenuRegisterModal({ isVisible, onClose, storeId }: any) 
     };
 
     const handleRegister = async () => {
-        if (!imageUri || !menuName || !originalPrice || !discountPrice || !quantity) {
+        if (!imageUri || !itemName || !originalPrice || !discountPrice || !stock) {
             Alert.alert("모든 항목을 입력해주세요.");
             return;
         }
@@ -49,25 +49,23 @@ export default function MenuRegisterModal({ isVisible, onClose, storeId }: any) 
                 return;
             }
 
-            const menuId = uuidv4();
+            const itemId = uuidv4();
 
-            const menuData = {
-                menuId,
-                menuName,
+            const itemData = {
+                itemId,
+                itemName,
                 thumbnailImg: imageUrl,
                 originalPrice: Number(originalPrice),
                 discountPrice: Number(discountPrice),
-                quantity: Number(quantity),
+                stock: Number(stock),
                 addDate: new Date().toISOString(),
             };
-            await addMenuToStore(storeId, menuData);
+            await addItemToStore(storeId, itemData);
 
             Alert.alert("등록 완료", "메뉴가 성공적으로 등록되었습니다.", [
                 {
                     text: "확인",
-                    onPress: () => {
-                        onClose();
-                    },
+                    onPress: () => onClose(itemData),
                 },
             ]);
         } catch (error) {
@@ -84,8 +82,8 @@ export default function MenuRegisterModal({ isVisible, onClose, storeId }: any) 
                     <Text style={styles.label}>메뉴 이름</Text>
                     <TextInput
                         style={styles.input}
-                        value={menuName}
-                        onChangeText={setMenuName}
+                        value={itemName}
+                        onChangeText={setItemName}
                         placeholder="메뉴 이름을 입력하세요"
                         placeholderTextColor="#a1a1aa"
                     />
@@ -116,8 +114,8 @@ export default function MenuRegisterModal({ isVisible, onClose, storeId }: any) 
                     <Text style={styles.label}>수량</Text>
                     <TextInput
                         style={styles.input}
-                        value={quantity}
-                        onChangeText={setQuantity}
+                        value={stock}
+                        onChangeText={setStock}
                         placeholder="수량을 입력하세요"
                         keyboardType="number-pad"
                         placeholderTextColor="#a1a1aa"
@@ -169,7 +167,7 @@ const styles = StyleSheet.create({
         borderColor: "#ccc",
         borderRadius: 8,
         padding: 12,
-        marginBottom: 24, // 👉 input 간 간격 넉넉히
+        marginBottom: 24,
     },
     placeholder: {
         color: "#a1a1aa",
