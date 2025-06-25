@@ -1,17 +1,37 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert, Platform, KeyboardAvoidingView, ScrollView, TouchableOpacity } from "react-native";
+import {
+    View,
+    Text,
+    TextInput,
+    Button,
+    StyleSheet,
+    Alert,
+    Platform,
+    KeyboardAvoidingView,
+    ScrollView,
+    TouchableOpacity,
+    ActivityIndicator,
+} from "react-native";
 import Modal from "react-native-modal";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from "uuid";
+import { createStore } from "../services/user";
+import ImageUploader from "./ImageUploader";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../firebase";
 
-export default function StoreRegister({ isVisible }: any) {
+export default function StoreRegisterModal({ isVisible, onClose }: any) {
+    const [imageUri, setImageUri] = useState("");
+    const [uploading, setUploading] = useState(false);
     const [storeName, setStoreName] = useState("");
     const [address, setAddress] = useState("");
     const [phone, setPhone] = useState("");
     const [businessNumber, setBusinessNumber] = useState("");
     const [category, setCategory] = useState("");
-    const [accountNumber, setAccountNumber] = useState("");
+    const [bankAccount, setBankAccount] = useState("");
     const [closingTime, setClosingTime] = useState(new Date());
     const [showTimePicker, setShowTimePicker] = useState(false);
 
@@ -22,25 +42,67 @@ export default function StoreRegister({ isVisible }: any) {
         }
     };
 
-    const handleRegister = () => {
-        const storeData = {
-            storeName,
-            address,
-            phone,
-            businessNumber,
-            category,
-            accountNumber,
-            closingTime: closingTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        };
-        console.log("Store Data:", storeData);
+    const uploadImage = async (uri: string) => {
+        try {
+            const response = await fetch(uri);
+            const blob = await response.blob();
 
-        if (!storeName || !address || !phone || !businessNumber || !category || !accountNumber) {
+            const imageId = `${Date.now().toString(36)}-${Math.random().toString(36).substr(2, 5)}`;
+            const imageRef = ref(storage, `storeImages/${imageId}`);
+
+            await uploadBytes(imageRef, blob);
+            const downloadURL = await getDownloadURL(imageRef);
+
+            return downloadURL;
+        } catch (error) {
+            console.error("이미지 업로드 에러:", error);
+            return null;
+        }
+    };
+
+    const handleRegister = async () => {
+        if (!imageUri || !storeName || !address || !phone || !businessNumber || !category || !bankAccount) {
             Alert.alert("모든 항목을 입력해주세요.");
             return;
         }
+        setUploading(true);
 
-        // 여기서 서버로 데이터 전송하면 됨
-        Alert.alert("등록 완료", "가게 정보가 성공적으로 등록되었습니다.");
+        try {
+            const imageUrl = await uploadImage(imageUri);
+            if (!imageUrl) {
+                Alert.alert("이미지 업로드 실패", "다시 시도해주세요.");
+                setUploading(false);
+                return;
+            }
+            const storeId = uuidv4();
+
+            const storeData = {
+                thumbnailImg: imageUrl,
+                storeId,
+                storeName,
+                businessNumber,
+                category,
+                address,
+                phone,
+                bankAccount,
+                closingTime: closingTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+                itemList: [],
+                reviewList: [],
+            };
+            await createStore(storeData);
+
+            Alert.alert("등록 완료", "가게 정보가 성공적으로 등록되었습니다.", [
+                {
+                    text: "확인",
+                    onPress: () => {
+                        onClose();
+                    },
+                },
+            ]);
+        } catch (error) {
+            Alert.alert("오류 발생", "잠시 후 다시 시도해주세요.");
+            console.error(error);
+        }
     };
 
     return (
@@ -53,7 +115,7 @@ export default function StoreRegister({ isVisible }: any) {
                         style={styles.input}
                         value={storeName}
                         onChangeText={setStoreName}
-                        placeholder="거게 이름을 입력하세요"
+                        placeholder="가게 이름을 입력하세요"
                         placeholderTextColor="#a1a1aa"
                     />
 
@@ -70,6 +132,11 @@ export default function StoreRegister({ isVisible }: any) {
                         <Picker.Item label="과일" value="fruit" color="#222" />
                         <Picker.Item label="샐러드" value="salad" color="#222" />
                     </Picker>
+
+                    <Text style={styles.label}>가게 이미지</Text>
+                    <ImageUploader onImageSelected={setImageUri} />
+
+                    {/* {uploading ? <ActivityIndicator size="large" color="#0000ff" /> : <Button title="가게 등록" onPress={handleRegister} />} */}
 
                     <Text style={styles.label}>주소</Text>
                     <TextInput
@@ -103,8 +170,8 @@ export default function StoreRegister({ isVisible }: any) {
                     <Text style={styles.label}>계좌번호</Text>
                     <TextInput
                         style={styles.input}
-                        value={accountNumber}
-                        onChangeText={setAccountNumber}
+                        value={bankAccount}
+                        onChangeText={setBankAccount}
                         placeholder="예) 토스 100012341234"
                         placeholderTextColor="#a1a1aa"
                     />
