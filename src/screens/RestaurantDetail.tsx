@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Ale
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/types";
 import ReservationBottomSheet from "../components/ReservationBottomSheet";
-import { createReservation } from "../services/reservation";
+import { createReservation } from "../api/reservation";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { FallbackImage } from "../components/FallbackImage";
 import { Reservation } from "../types/reservation";
