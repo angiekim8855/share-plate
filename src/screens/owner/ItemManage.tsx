@@ -1,17 +1,44 @@
 import React, { useEffect, useState } from "react";
-import { Text, StyleSheet, ScrollView, Button } from "react-native";
-import MenuRegisterModal from "../../components/MenuRegisterModal";
+import { Text, StyleSheet, ScrollView, Button, ActivityIndicator } from "react-native";
 import { doc, getDoc, updateDoc, arrayRemove } from "firebase/firestore";
 import { db } from "../../../firebase";
 import { Item } from "../../types/item";
 import ItemList from "../../components/ItemList";
 import { Alert } from "react-native";
+import MenuModal from "../../components/MenuModal";
+import { addItemToStore, updateItemInStore } from "../../api/owner";
 
 export default function ItemManage() {
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [modalMode, setModalMode] = useState<"add" | "edit">("add");
+    const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+    const [itemList, setItemList] = useState<Item[]>([]);
+    const [loading, setLoading] = useState(false);
+
     // 데이터 가져와야함
     const storeId = "4a550e11-e86c-43fa-91a6-02fd5a480331";
-    const [itemList, setItemList] = useState<Item[]>([]);
+
+    const handleAddMenu = () => {
+        setModalMode("add");
+        setSelectedItem(null);
+        setIsModalVisible(true);
+    };
+
+    const handleEditMenu = (item: Item) => {
+        setModalMode("edit");
+        setSelectedItem(item);
+        setIsModalVisible(true);
+    };
+
+    const handleSubmitMenu = async (newItem: Item) => {
+        if (modalMode === "add") {
+            await addItemToStore(storeId, newItem);
+            setItemList((prev) => [...prev, newItem]);
+        } else if (modalMode === "edit" && selectedItem) {
+            await updateItemInStore(storeId, selectedItem, newItem); // 수정 로직
+            setItemList((prev) => prev.map((menu) => (menu.itemId === selectedItem.itemId ? newItem : menu)));
+        }
+    };
 
     // 삭제 핸들러
     const handleDeleteItem = (item: Item) => {
@@ -42,6 +69,8 @@ export default function ItemManage() {
     };
 
     const fetchItemList = async (documentId: string) => {
+        setLoading(true);
+
         try {
             const storeRef = doc(db, "store", documentId);
             const storeSnap = await getDoc(storeRef);
@@ -50,10 +79,15 @@ export default function ItemManage() {
                 const storeData = storeSnap.data();
                 const itemList = storeData.itemList || [];
                 setItemList(itemList);
+                setLoading(false);
             } else {
+                setLoading(false);
+                Alert.alert("오류 발생", "잠시 후 다시 시도해주세요.");
                 console.log("해당 문서가 존재하지 않습니다.");
             }
         } catch (error) {
+            setLoading(false);
+            Alert.alert("오류 발생", "잠시 후 다시 시도해주세요.");
             console.error("itemList 가져오기 에러:", error);
         }
     };
@@ -65,21 +99,20 @@ export default function ItemManage() {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>메뉴 관리</Text>
-            <Button title="메뉴 추가" onPress={() => setIsModalVisible(true)} />
+            <Button title="메뉴 추가" onPress={handleAddMenu} />
 
-            <ItemList
-                itemList={itemList}
-                //  onEdit={handleEditItem}
-                onDelete={handleDeleteItem}
-            />
+            {loading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+                <ItemList itemList={itemList} onEdit={handleEditMenu} onDelete={handleDeleteItem} />
+            )}
 
-            <MenuRegisterModal
+            <MenuModal
                 isVisible={isModalVisible}
-                onClose={(newItemData: Item) => {
-                    setItemList((prevList) => [...prevList, newItemData]);
-                    setIsModalVisible(false);
-                }}
-                storeId={storeId}
+                onClose={() => setIsModalVisible(false)}
+                onSubmit={handleSubmitMenu} // 등록 또는 수정 동작
+                mode={modalMode} // "add" 또는 "edit"
+                initialData={selectedItem}
             />
         </ScrollView>
     );
