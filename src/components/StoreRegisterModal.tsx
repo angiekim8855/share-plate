@@ -18,14 +18,14 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
-import { createStore } from "../services/user";
+import { createStore } from "../api/owner";
 import ImageUploader from "./ImageUploader";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";
 
 export default function StoreRegisterModal({ isVisible, onClose }: any) {
     const [imageUri, setImageUri] = useState("");
-    const [uploading, setUploading] = useState(false);
+    const [uploading, setLoading] = useState(false);
     const [storeName, setStoreName] = useState("");
     const [address, setAddress] = useState("");
     const [phone, setPhone] = useState("");
@@ -65,13 +65,13 @@ export default function StoreRegisterModal({ isVisible, onClose }: any) {
             Alert.alert("모든 항목을 입력해주세요.");
             return;
         }
-        setUploading(true);
+        setLoading(true);
 
         try {
             const imageUrl = await uploadImage(imageUri);
             if (!imageUrl) {
                 Alert.alert("이미지 업로드 실패", "다시 시도해주세요.");
-                setUploading(false);
+                setLoading(false);
                 return;
             }
             const storeId = uuidv4();
@@ -95,11 +95,13 @@ export default function StoreRegisterModal({ isVisible, onClose }: any) {
                 {
                     text: "확인",
                     onPress: () => {
+                        setLoading(false);
                         onClose();
                     },
                 },
             ]);
         } catch (error) {
+            setLoading(false);
             Alert.alert("오류 발생", "잠시 후 다시 시도해주세요.");
             console.error(error);
         }
@@ -135,8 +137,6 @@ export default function StoreRegisterModal({ isVisible, onClose }: any) {
 
                     <Text style={styles.label}>가게 이미지</Text>
                     <ImageUploader onImageSelected={setImageUri} />
-
-                    {/* {uploading ? <ActivityIndicator size="large" color="#0000ff" /> : <Button title="가게 등록" onPress={handleRegister} />} */}
 
                     <Text style={styles.label}>주소</Text>
                     <TextInput
@@ -193,10 +193,15 @@ export default function StoreRegisterModal({ isVisible, onClose }: any) {
                         />
                     )}
                 </ScrollView>
+
                 <View style={styles.footer}>
-                    <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-                        <Text style={styles.registerText}>등록하기</Text>
-                    </TouchableOpacity>
+                    {uploading ? (
+                        <ActivityIndicator size="large" color="#4CAF50" />
+                    ) : (
+                        <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+                            <Text style={styles.registerText}>등록하기</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </KeyboardAvoidingView>
         </Modal>
