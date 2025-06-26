@@ -5,7 +5,14 @@ export type Reservation = {
     storeId: string;
     storeName: string;
     reservationDate: string; // YYYY-MM-DD 형식
-    itemList: { itemId: string; itemName: string; quantity: number; finalPrice: number }[];
+    itemList: ReservationItem[];
     totalPrice: number;
     orderStatus: "pending" | "canceled" | "completed";
+};
+
+export type ReservationItem = {
+    itemId: string;
+    itemName: string;
+    discountPrice: number;
+    stock: number;
 };
