@@ -1,13 +1,23 @@
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { storage } from "../../firebase";
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View, StyleSheet } from "react-native";
+import {
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    StyleSheet,
+    ActivityIndicator,
+} from "react-native";
 import Modal from "react-native-modal";
 import ImageUploader from "./ImageUploader";
-import { addItemToStore } from "../services/user";
 
-export default function MenuRegisterModal({ isVisible, onClose, storeId }: any) {
+export default function MenuModal({ isVisible, onClose, onSubmit, mode, initialData = {} }: any) {
     const [imageUri, setImageUri] = useState("");
     const [uploading, setUploading] = useState(false);
     const [itemName, setItemName] = useState("");
@@ -15,8 +25,19 @@ export default function MenuRegisterModal({ isVisible, onClose, storeId }: any) 
     const [discountPrice, setDiscountPrice] = useState("");
     const [stock, setStock] = useState("");
 
+    // 모달 열릴 때마다 초기값 세팅
+    useEffect(() => {
+        setImageUri(initialData?.thumbnailImg || "");
+        setItemName(initialData?.itemName || "");
+        setOriginalPrice(initialData?.originalPrice?.toString() || "");
+        setDiscountPrice(initialData?.discountPrice?.toString() || "");
+        setStock(initialData?.stock?.toString() || "");
+    }, [initialData, isVisible]);
+
     const uploadImage = async (uri: string) => {
         try {
+            if (!uri || uri.startsWith("http")) return uri; // 기존 이미지 유지
+
             const response = await fetch(uri);
             const blob = await response.blob();
 
@@ -33,8 +54,8 @@ export default function MenuRegisterModal({ isVisible, onClose, storeId }: any) 
         }
     };
 
-    const handleRegister = async () => {
-        if (!imageUri || !itemName || !originalPrice || !discountPrice || !stock) {
+    const handleSubmit = async () => {
+        if (!itemName || !originalPrice || !discountPrice || !stock) {
             Alert.alert("모든 항목을 입력해주세요.");
             return;
         }
@@ -49,26 +70,28 @@ export default function MenuRegisterModal({ isVisible, onClose, storeId }: any) 
                 return;
             }
 
-            const itemId = uuidv4();
-
-            const itemData = {
-                itemId,
+            const newItemData = {
+                itemId: initialData?.itemId || uuidv4(),
                 itemName,
                 thumbnailImg: imageUrl,
                 originalPrice: Number(originalPrice),
                 discountPrice: Number(discountPrice),
                 stock: Number(stock),
-                addDate: new Date().toISOString(),
+                addDate: initialData?.addDate || new Date().toISOString(),
             };
-            await addItemToStore(storeId, itemData);
+            await onSubmit(newItemData); // 등록/수정 공통 처리
 
             Alert.alert("등록 완료", "메뉴가 성공적으로 등록되었습니다.", [
                 {
                     text: "확인",
-                    onPress: () => onClose(itemData),
+                    onPress: () => {
+                        setUploading(false);
+                        onClose();
+                    },
                 },
             ]);
         } catch (error) {
+            setUploading(false);
             Alert.alert("오류 발생", "잠시 후 다시 시도해주세요.");
             console.error(error);
         }
@@ -77,7 +100,7 @@ export default function MenuRegisterModal({ isVisible, onClose, storeId }: any) 
     return (
         <Modal isVisible={isVisible} onBackdropPress={onClose} style={styles.modal}>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.sheet}>
-                <Text style={styles.title}>메뉴 등록</Text>
+                <Text style={styles.title}>{mode === "edit" ? "메뉴 수정" : "메뉴 등록"}</Text>
                 <ScrollView style={styles.scrollView}>
                     <Text style={styles.label}>메뉴 이름</Text>
                     <TextInput
@@ -89,7 +112,7 @@ export default function MenuRegisterModal({ isVisible, onClose, storeId }: any) 
                     />
 
                     <Text style={styles.label}>메뉴 이미지</Text>
-                    <ImageUploader onImageSelected={setImageUri} />
+                    <ImageUploader onImageSelected={setImageUri} initialImage={imageUri} />
 
                     <Text style={styles.label}>정가</Text>
                     <TextInput
@@ -123,9 +146,13 @@ export default function MenuRegisterModal({ isVisible, onClose, storeId }: any) 
                 </ScrollView>
 
                 <View style={styles.footer}>
-                    <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-                        <Text style={styles.registerText}>등록하기</Text>
-                    </TouchableOpacity>
+                    {uploading ? (
+                        <ActivityIndicator size="large" color="#4CAF50" />
+                    ) : (
+                        <TouchableOpacity style={styles.registerButton} onPress={handleSubmit}>
+                            <Text style={styles.registerText}>{mode === "edit" ? "수정하기" : "등록하기"}</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </KeyboardAvoidingView>
         </Modal>
