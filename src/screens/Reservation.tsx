@@ -53,7 +53,7 @@ export function Reservation() {
             <Text style={styles.title}>나의 예약 리스트</Text>
             <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 50 }}>
                 {reservations && reservations.length > 0 ? (
-                    reservations.map((item, idx) => (
+                    reservations.map((item) => (
                         <View key={item.id} style={styles.card}>
                             <Text style={styles.storeName}>{item.storeName}</Text>
                             <Text style={styles.date}>예약일: {new Date(item.reservationDate).toLocaleString()}</Text>
@@ -61,8 +61,8 @@ export function Reservation() {
                                 {item.itemList.map((menuItem, menuIdx) => (
                                     <View key={`${item.id}-${menuIdx}`} style={styles.menuItem}>
                                         <Text style={styles.menuName}>• {menuItem.itemName}</Text>
-                                        <Text style={styles.menuQuantity}>수량: {menuItem.quantity}개</Text>
-                                        <Text style={styles.menuPrice}>₩{menuItem.finalPrice.toLocaleString()}</Text>
+                                        <Text style={styles.menuQuantity}>수량: {menuItem.stock}개</Text>
+                                        <Text style={styles.menuPrice}>₩{menuItem.discountPrice.toLocaleString()}</Text>
                                     </View>
                                 ))}
                             </View>

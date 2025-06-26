@@ -1,6 +1,7 @@
 import React from "react";
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { FallbackImage } from "./FallbackImage";
+import { Item } from "../types/item";
 
 export default function ItemList({ itemList, onEdit, onDelete }: any) {
     return (
@@ -8,7 +9,7 @@ export default function ItemList({ itemList, onEdit, onDelete }: any) {
             {itemList.length === 0 ? (
                 <Text style={styles.emptyText}>등록된 메뉴가 없습니다.</Text>
             ) : (
-                itemList.map((item: any) => (
+                itemList.map((item: Item) => (
                     <View key={item.itemId} style={styles.card}>
                         {/* 메뉴 이미지 */}
                         <FallbackImage uri={item.thumbnailImg} style={styles.image} defaultImg={require("../../assets/default-food.jpeg")} />

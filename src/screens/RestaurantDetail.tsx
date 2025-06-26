@@ -6,7 +6,7 @@ import ReservationBottomSheet from "../components/ReservationBottomSheet";
 import { createReservation } from "../api/reservation";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { FallbackImage } from "../components/FallbackImage";
-import { Reservation } from "../types/reservation";
+import { Reservation, ReservationItem } from "../types/reservation";
 import { generateOrderNumber } from "../utils/util";
 
 type RestaurantDetailRouteProp = RouteProp<RootStackParamList, "RestaurantDetail">;
@@ -20,7 +20,7 @@ export default function RestaurantDetail() {
     const [modalVisible, setModalVisible] = useState(false);
 
     // 예약하기 버튼 눌렀을 때
-    const handleReserve = async (itemList: { itemId: string; itemName: string; quantity: number; finalPrice: number }[], totalPrice: number) => {
+    const handleReserve = async (itemList: ReservationItem[], totalPrice: number) => {
         try {
             const reservationData: Reservation = {
                 orderNumber: generateOrderNumber(),
@@ -64,12 +64,12 @@ export default function RestaurantDetail() {
                 {store.itemList.length > 0 ? (
                     store.itemList.map((item) => (
                         <View key={item.itemId} style={styles.menuItem}>
-                            <FallbackImage uri={item.itemImg} style={styles.image} defaultImg={require("../../assets/default-food.jpeg")} />
+                            <FallbackImage uri={item.thumbnailImg} style={styles.image} defaultImg={require("../../assets/default-food.jpeg")} />
                             <View style={styles.menuText}>
                                 <Text>{item.itemName || "메뉴 이름 없음"}</Text>
                                 <View style={styles.priceContainer}>
-                                    <Text style={styles.originalPrice}>{item.price.toLocaleString()}원</Text>
-                                    <Text style={styles.discountPrice}>{item.finalPrice.toLocaleString()}원</Text>
+                                    <Text style={styles.originalPrice}>{item.originalPrice.toLocaleString()}원</Text>
+                                    <Text style={styles.discountPrice}>{item.discountPrice.toLocaleString()}원</Text>
                                 </View>
                                 <Text>수량: {item.stock}</Text>
                             </View>
