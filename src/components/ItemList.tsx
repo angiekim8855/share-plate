@@ -12,13 +12,6 @@ export default function ItemList({ itemList, onEdit, onDelete }: any) {
                     <View key={item.itemId} style={styles.card}>
                         {/* 메뉴 이미지 */}
                         <FallbackImage uri={item.thumbnailImg} style={styles.image} defaultImg={require("../../assets/default-food.jpeg")} />
-                        {/* {item.imageUrl ? (
-                            <Image source={{ uri: item.imageUrl }} style={styles.image} />
-                        ) : (
-                            <View style={styles.imagePlaceholder}>
-                                <Text style={styles.imagePlaceholderText}>이미지 없음</Text>
-                            </View>
-                        )} */}
 
                         {/* 메뉴 정보 */}
                         <View style={styles.info}>
