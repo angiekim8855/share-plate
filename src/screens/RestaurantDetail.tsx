@@ -10,6 +10,7 @@ import { rawReservation, Reservation, ReservationItem } from "../types/reservati
 import { generateOrderNumber } from "../utils/util";
 import { fetchItemsFromStore } from "../api/owner";
 import { Item } from "../types/item";
+import { Review } from "../types/review";
 
 type RestaurantDetailRouteProp = RouteProp<RootStackParamList, "RestaurantDetail">;
 type Navigation = StackNavigationProp<RootStackParamList, "RestaurantDetail">;
@@ -23,6 +24,9 @@ export default function RestaurantDetail() {
     const { store } = route.params;
     const [modalVisible, setModalVisible] = useState(false);
     const [itemList, setItemList] = useState<Item[]>([]);
+    const [reviewList, setReviewList] = useState<Review[]>([]);
+
+    // 리뷰리스트 불러오기 추가해야함.
 
     useEffect(() => {
         const loadItems = async () => {
@@ -45,7 +49,7 @@ export default function RestaurantDetail() {
                 reservationDate: new Date().toISOString(),
                 itemList: itemList,
                 totalPrice: totalPrice,
-                orderStatus: "pending", // 초기 상태
+                orderStatus: "Pending", // 초기 상태
             };
             await createReservation(store.storeId, userId, reservationData);
 
@@ -94,8 +98,8 @@ export default function RestaurantDetail() {
                 )}
 
                 <Text style={styles.sectionTitle}>📝 리뷰</Text>
-                {store.reviewList.length > 0 ? (
-                    store.reviewList.map((review, index) => (
+                {reviewList.length > 0 ? (
+                    reviewList.map((review, index) => (
                         <View style={styles.reviewContainer} key={`${review.reviewId}-${index}`}>
                             <FallbackImage uri={review.img} style={styles.reviewImage} />
                             <View style={styles.reviewContent}>
