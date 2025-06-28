@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
@@ -7,6 +7,7 @@ import { FallbackImage } from "../components/FallbackImage";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 import { Store } from "../types/store";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 type Navigation = StackNavigationProp<RootStackParamList, "HomeMain">;
 
@@ -33,6 +34,7 @@ export default function Home() {
                     closingTime: data.closingTime ?? "",
                     itemList: data.itemList ?? [],
                     reviewList: data.reviewList ?? [],
+                    reservationList: data.reservationList ?? [],
                 } as Store;
             });
             setStoreList(stores);
@@ -47,26 +49,24 @@ export default function Home() {
         fetchStores();
     }, []);
 
+    if (loading) {
+        return <LoadingIndicator />;
+    }
+
     return (
-        <View>
-            {loading ? (
-                <ActivityIndicator size="large" color="#0000ff" />
-            ) : (
-                <FlatList
-                    data={storeList}
-                    keyExtractor={(item) => item.storeId}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("RestaurantDetail", { store: item })}>
-                            <FallbackImage uri={item.thumbnailImg} style={styles.thumbnail} defaultImg={require("../../assets/defaultImg.jpeg")} />
-                            <View>
-                                <Text style={styles.name}>{item.storeName}</Text>
-                                <Text>{item.address}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    )}
-                />
+        <FlatList
+            data={storeList}
+            keyExtractor={(item) => item.storeId}
+            renderItem={({ item }) => (
+                <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("RestaurantDetail", { store: item })}>
+                    <FallbackImage uri={item.thumbnailImg} style={styles.thumbnail} defaultImg={require("../../assets/defaultImg.jpeg")} />
+                    <View>
+                        <Text style={styles.name}>{item.storeName}</Text>
+                        <Text>{item.address}</Text>
+                    </View>
+                </TouchableOpacity>
             )}
-        </View>
+        />
     );
 }
 
