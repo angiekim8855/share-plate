@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert } from "react-native";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/types";
@@ -6,26 +6,40 @@ import ReservationBottomSheet from "../components/ReservationBottomSheet";
 import { createReservation } from "../api/reservation";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { FallbackImage } from "../components/FallbackImage";
-import { Reservation, ReservationItem } from "../types/reservation";
+import { rawReservation, Reservation, ReservationItem } from "../types/reservation";
 import { generateOrderNumber } from "../utils/util";
+import { fetchItemsFromStore } from "../api/owner";
+import { Item } from "../types/item";
 
 type RestaurantDetailRouteProp = RouteProp<RootStackParamList, "RestaurantDetail">;
 type Navigation = StackNavigationProp<RootStackParamList, "RestaurantDetail">;
 
 export default function RestaurantDetail() {
+    const userId = "1253464264";
+    const userName = "앤지";
     const navigation = useNavigation<Navigation>();
 
     const route = useRoute<RestaurantDetailRouteProp>();
     const { store } = route.params;
     const [modalVisible, setModalVisible] = useState(false);
+    const [itemList, setItemList] = useState<Item[]>([]);
+
+    useEffect(() => {
+        const loadItems = async () => {
+            const items = await fetchItemsFromStore(store.storeId);
+            setItemList(items as Item[]);
+        };
+
+        loadItems();
+    }, [store.storeId]);
 
     // 예약하기 버튼 눌렀을 때
     const handleReserve = async (itemList: ReservationItem[], totalPrice: number) => {
         try {
-            const reservationData: Reservation = {
+            const reservationData: rawReservation = {
                 orderNumber: generateOrderNumber(),
-                userId: "1253464264",
-                userName: "앤지",
+                userId: userId,
+                userName: userName,
                 storeId: store.storeId,
                 storeName: store.storeName,
                 reservationDate: new Date().toISOString(),
@@ -33,9 +47,9 @@ export default function RestaurantDetail() {
                 totalPrice: totalPrice,
                 orderStatus: "pending", // 초기 상태
             };
-            const reservationId = await createReservation(reservationData);
+            await createReservation(store.storeId, userId, reservationData);
 
-            Alert.alert("예약 완료", `예약이 정상적으로 완료되었습니다!\n예약 번호: ${reservationId}`, [
+            Alert.alert("예약 완료", `예약이 정상적으로 완료되었습니다!`, [
                 {
                     text: "확인",
                     onPress: () => {
@@ -61,8 +75,8 @@ export default function RestaurantDetail() {
                 </Text>
 
                 <Text style={styles.sectionTitle}>📋 메뉴</Text>
-                {store.itemList.length > 0 ? (
-                    store.itemList.map((item) => (
+                {itemList.length > 0 ? (
+                    itemList.map((item) => (
                         <View key={item.itemId} style={styles.menuItem}>
                             <FallbackImage uri={item.thumbnailImg} style={styles.image} defaultImg={require("../../assets/default-food.jpeg")} />
                             <View style={styles.menuText}>
@@ -105,7 +119,7 @@ export default function RestaurantDetail() {
                     handleReserve(itemList, totalPrice);
                     setModalVisible(false);
                 }}
-                item={store.itemList}
+                item={itemList}
             />
         </SafeAreaView>
     );

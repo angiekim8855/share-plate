@@ -1,4 +1,5 @@
 export type Reservation = {
+    reservationId: string;
     orderNumber: string;
     userId: string;
     userName: string;
@@ -9,6 +10,8 @@ export type Reservation = {
     totalPrice: number;
     orderStatus: "pending" | "canceled" | "completed";
 };
+
+export type rawReservation = Omit<Reservation, "reservationId">;
 
 export type ReservationItem = {
     itemId: string;
