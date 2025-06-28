@@ -28,11 +28,13 @@ export default function ReservationList() {
 
     const getStatusStyle = (status: string) => {
         switch (status) {
-            case "pending":
+            case "Pending":
                 return { backgroundColor: "#FFCC00", color: "#000" }; // 노랑
-            case "canceled":
+            case "Canceled":
                 return { backgroundColor: "#FF6B6B", color: "#fff" }; // 빨강
-            case "completed":
+            case "Reserved":
+                return { backgroundColor: "#1E90FF", color: "#fff" }; // 초록
+            case "Completed":
                 return { backgroundColor: "#4CAF50", color: "#fff" }; // 초록
             default:
                 return { backgroundColor: "#ccc", color: "#000" };
