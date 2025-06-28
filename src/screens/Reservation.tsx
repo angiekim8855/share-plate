@@ -1,65 +1,45 @@
-import React, { useState, useCallback } from "react";
-import { View, Text, ActivityIndicator, StyleSheet, ScrollView } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
-import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
-import { db } from "../../firebase";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { Reservation as ReservationType } from "../types/reservation";
-
-type Reservation = ReservationType & {
-    id: string;
-};
+import { fetchUserReservations } from "../api/user";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 export function Reservation() {
     const [loading, setLoading] = useState(true);
-    const [reservations, setReservations] = useState<Reservation[]>([]);
+    const [reservationList, setReservationList] = useState<ReservationType[]>([]);
 
     // 유저 정보는 Auth나 AsyncStorage에서 가져올 수 있다고 생각
     const userId = "1253464264";
 
-    const fetchReservations = async () => {
-        setLoading(true);
-        try {
-            const q = query(collection(db, "reservations"), where("userId", "==", userId), orderBy("reservationDate", "desc"));
-            const snapshot = await getDocs(q);
-            const resList: Reservation[] = [];
-
-            snapshot.forEach((doc) => {
-                resList.push({ id: doc.id, ...(doc.data() as Omit<Reservation, "id">) });
-            });
-
-            setReservations(resList);
-        } catch (error) {
-            console.log("예약 정보 불러올 때 오류 :", error);
-        } finally {
+    useEffect(() => {
+        const loadReservations = async () => {
+            const data = await fetchUserReservations(userId);
+            setReservationList(data as ReservationType[]);
             setLoading(false);
-        }
-    };
+        };
 
-    useFocusEffect(
-        useCallback(() => {
-            fetchReservations();
-        }, [])
-    );
+        loadReservations();
+    }, [userId]);
 
     if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" />
-            </View>
-        );
+        return <LoadingIndicator />;
+    }
+
+    if (loading) {
+        return <LoadingIndicator />;
     }
     return (
         <View style={styles.container}>
             <Text style={styles.title}>나의 예약 리스트</Text>
             <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 50 }}>
-                {reservations && reservations.length > 0 ? (
-                    reservations.map((item) => (
-                        <View key={item.id} style={styles.card}>
+                {reservationList && reservationList.length > 0 ? (
+                    reservationList.map((item) => (
+                        <View key={item.reservationId} style={styles.card}>
                             <Text style={styles.storeName}>{item.storeName}</Text>
                             <Text style={styles.date}>예약일: {new Date(item.reservationDate).toLocaleString()}</Text>
                             <View style={styles.itemList}>
                                 {item.itemList.map((menuItem, menuIdx) => (
-                                    <View key={`${item.id}-${menuIdx}`} style={styles.menuItem}>
+                                    <View key={`${item.reservationId}-${menuIdx}`} style={styles.menuItem}>
                                         <Text style={styles.menuName}>• {menuItem.itemName}</Text>
                                         <Text style={styles.menuQuantity}>수량: {menuItem.stock}개</Text>
                                         <Text style={styles.menuPrice}>₩{menuItem.discountPrice.toLocaleString()}</Text>
@@ -80,6 +60,11 @@ export function Reservation() {
 const styles = StyleSheet.create({
     container: {
         padding: 10,
+    },
+    loader: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
     },
     loadingContainer: {
         flex: 1,
