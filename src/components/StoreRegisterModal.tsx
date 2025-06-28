@@ -1,17 +1,5 @@
 import React, { useState } from "react";
-import {
-    View,
-    Text,
-    TextInput,
-    Button,
-    StyleSheet,
-    Alert,
-    Platform,
-    KeyboardAvoidingView,
-    ScrollView,
-    TouchableOpacity,
-    ActivityIndicator,
-} from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, Alert, Platform, KeyboardAvoidingView, ScrollView, TouchableOpacity } from "react-native";
 import Modal from "react-native-modal";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -22,6 +10,7 @@ import { createStore } from "../api/owner";
 import ImageUploader from "./ImageUploader";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";
+import LoadingIndicator from "./LoadingIndicator";
 
 export default function StoreRegisterModal({ isVisible, onClose }: any) {
     const [imageUri, setImageUri] = useState("");
@@ -86,8 +75,6 @@ export default function StoreRegisterModal({ isVisible, onClose }: any) {
                 phone,
                 bankAccount,
                 closingTime: closingTime.toISOString(),
-                itemList: [],
-                reviewList: [],
             };
             await createStore({ storeData, storeId });
 
@@ -196,7 +183,7 @@ export default function StoreRegisterModal({ isVisible, onClose }: any) {
 
                 <View style={styles.footer}>
                     {uploading ? (
-                        <ActivityIndicator size="large" color="#4CAF50" />
+                        <LoadingIndicator />
                     ) : (
                         <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
                             <Text style={styles.registerText}>등록하기</Text>
