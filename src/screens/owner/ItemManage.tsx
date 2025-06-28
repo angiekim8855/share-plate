@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Text, StyleSheet, ScrollView, Button, ActivityIndicator } from "react-native";
-import { doc, getDoc, updateDoc, arrayRemove } from "firebase/firestore";
+import { Text, StyleSheet, ScrollView, Button } from "react-native";
+import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "../../../firebase";
 import { Item } from "../../types/item";
 import ItemList from "../../components/ItemList";
 import { Alert } from "react-native";
 import MenuModal from "../../components/MenuModal";
-import { addItemToStore, updateItemInStore } from "../../api/owner";
+import { addItemToStore, fetchItemsFromStore, updateItemInStore } from "../../api/owner";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 export default function ItemManage() {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -35,7 +36,7 @@ export default function ItemManage() {
             await addItemToStore(storeId, newItem);
             setItemList((prev) => [...prev, newItem]);
         } else if (modalMode === "edit" && selectedItem) {
-            await updateItemInStore(storeId, selectedItem, newItem); // 수정 로직
+            await updateItemInStore(storeId, selectedItem.itemId, newItem); // 수정 로직
             setItemList((prev) => prev.map((menu) => (menu.itemId === selectedItem.itemId ? newItem : menu)));
         }
     };
@@ -55,45 +56,33 @@ export default function ItemManage() {
     // 삭제 확정 로직
     const confirmDelete = async (item: Item) => {
         try {
-            const storeRef = doc(db, "store", storeId); // documentId는 현재 가게 문서 ID
+            const itemDocRef = doc(db, "store", storeId, "itemList", item.itemId);
 
-            await updateDoc(storeRef, {
-                itemList: arrayRemove(item),
-            });
+            await deleteDoc(itemDocRef);
 
-            // local state에서도 삭제
             setItemList((prevList) => prevList.filter((menu) => menu.itemId !== item.itemId));
+
+            console.log("삭제 성공:", item.itemId);
         } catch (error) {
             console.error("삭제 실패:", error);
         }
     };
 
-    const fetchItemList = async (documentId: string) => {
+    const fetchItemList = async () => {
         setLoading(true);
 
         try {
-            const storeRef = doc(db, "store", documentId);
-            const storeSnap = await getDoc(storeRef);
-
-            if (storeSnap.exists()) {
-                const storeData = storeSnap.data();
-                const itemList = storeData.itemList || [];
-                setItemList(itemList);
-                setLoading(false);
-            } else {
-                setLoading(false);
-                Alert.alert("오류 발생", "잠시 후 다시 시도해주세요.");
-                console.log("해당 문서가 존재하지 않습니다.");
-            }
+            const fetchedItems = await fetchItemsFromStore(storeId);
+            setItemList(fetchedItems as Item[]);
         } catch (error) {
+            console.error("메뉴 불러오기 실패:", error);
+        } finally {
             setLoading(false);
-            Alert.alert("오류 발생", "잠시 후 다시 시도해주세요.");
-            console.error("itemList 가져오기 에러:", error);
         }
     };
 
     useEffect(() => {
-        fetchItemList(storeId);
+        fetchItemList();
     }, []);
 
     return (
@@ -101,11 +90,7 @@ export default function ItemManage() {
             <Text style={styles.title}>메뉴 관리</Text>
             <Button title="메뉴 추가" onPress={handleAddMenu} />
 
-            {loading ? (
-                <ActivityIndicator size="large" color="#0000ff" />
-            ) : (
-                <ItemList itemList={itemList} onEdit={handleEditMenu} onDelete={handleDeleteItem} />
-            )}
+            {loading ? <LoadingIndicator /> : <ItemList itemList={itemList} onEdit={handleEditMenu} onDelete={handleDeleteItem} />}
 
             <MenuModal
                 isVisible={isModalVisible}
