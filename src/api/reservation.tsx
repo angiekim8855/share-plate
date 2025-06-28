@@ -1,6 +1,7 @@
 import { doc, setDoc } from "firebase/firestore";
 import { rawReservation } from "../types/reservation";
 import { db } from "../../firebase";
+import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 
 // ✅ 예약 저장 함수
