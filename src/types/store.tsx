@@ -1,6 +1,3 @@
-import { Item } from "./item";
-import { Review } from "./review";
-
 export type Store = {
     thumbnailImg: any;
     storeId: string;
@@ -11,6 +8,4 @@ export type Store = {
     phone: string;
     bankAccount: string;
     closingTime: string;
-    itemList: Item[];
-    reviewList: Review[];
 };
