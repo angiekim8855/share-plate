@@ -51,11 +51,11 @@ export default function ReservationList() {
                 reservations.map((reservation) => (
                     <View key={reservation.reservationId} style={[styles.card, styles[reservation.orderStatus]]}>
                         <View style={styles.header}>
-                            <Text style={styles.userName}>예약자: {reservation.userName}</Text>
+                            <Text style={styles.userName}>{reservation.orderNumber}</Text>
                             <StatusBadge status={reservation.orderStatus} />
                         </View>
 
-                        <Text style={styles.reservationNumber}>예약 번호: {reservation.orderNumber}</Text>
+                        <Text style={styles.reservationNumber}>예약자: {reservation.userName}</Text>
                         <Text style={styles.reservationDate}>예약일: {new Date(reservation.reservationDate).toLocaleDateString()}</Text>
                         <Text style={styles.totalPrice}>총 금액: {reservation.totalPrice.toLocaleString()}원</Text>
 
@@ -74,16 +74,16 @@ export default function ReservationList() {
                         {reservation.orderStatus === "Pending" && (
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity
-                                    style={styles.confirmButton}
+                                    style={styles.reservationButton}
                                     onPress={() => handleStatusChange(reservation.reservationId, "Reserved", "예약을 확정하시겠습니까?")}
                                 >
                                     <Text style={styles.buttonText}>예약 확정</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    style={styles.cancelButton}
+                                    style={styles.reservationButton}
                                     onPress={() => handleStatusChange(reservation.reservationId, "Canceled", "예약을 반려하시겠습니까?")}
                                 >
-                                    <Text style={styles.buttonText}>예약 반려</Text>
+                                    <Text style={styles.buttonText}>반려</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -91,16 +91,16 @@ export default function ReservationList() {
                         {reservation.orderStatus === "Reserved" && (
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity
-                                    style={styles.confirmButton}
+                                    style={styles.reservationButton}
                                     onPress={() => handleStatusChange(reservation.reservationId, "Completed", "픽업이 완료되었습니까?")}
                                 >
                                     <Text style={styles.buttonText}>픽업 완료</Text>
                                 </TouchableOpacity>
                                 {/* <TouchableOpacity
-                                    style={styles.cancelButton}
+                                    style={styles.reservationButton}
                                     onPress={() => handleStatusChange(reservation.reservationId, "Canceled", "예약을 반려하시겠습니까?")}
                                 >
-                                    <Text style={styles.buttonText}>예약 반려</Text>
+                                    <Text style={styles.buttonText}>반려</Text>
                                 </TouchableOpacity> */}
                             </View>
                         )}
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     userName: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: "600",
     },
     reservationNumber: {
@@ -212,22 +212,19 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flexDirection: "row",
-        justifyContent: "flex-end",
+        justifyContent: "space-between",
         marginTop: 12,
+        gap: 8,
     },
-    confirmButton: {
-        backgroundColor: "#4A4A4A",
+    reservationButton: {
+        borderWidth: 1,
         padding: 8,
-        borderRadius: 5,
-        marginRight: 8,
-    },
-    cancelButton: {
-        backgroundColor: "#4A4A4A",
-        padding: 8,
-        borderRadius: 5,
+        borderRadius: 8,
+        flex: 1,
     },
     buttonText: {
-        color: "#fff",
+        color: "#000",
         fontWeight: "bold",
+        textAlign: "center",
     },
 });
