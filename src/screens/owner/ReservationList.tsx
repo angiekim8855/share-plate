@@ -5,6 +5,7 @@ import { fetchStoreReservations } from "../../api/owner";
 import LoadingIndicator from "../../components/LoadingIndicator";
 import { updateOrderStatus } from "../../api/reservation";
 import { Reservation, ReservationStatus } from "../../types/reservation";
+import StatusBadge from "../../components/StatusBadge";
 
 export default function ReservationList() {
     const [isStoreNotResistered, setIsStoreNotResistered] = useState<boolean>(false);
@@ -14,46 +15,32 @@ export default function ReservationList() {
     // 데이터 가져와야함
     const storeId = "4a550e11-e86c-43fa-91a6-02fd5a480331";
 
-    useEffect(() => {
-        const loadReservations = async () => {
-            const data = await fetchStoreReservations(storeId);
-            setReservations(data);
-            setLoading(false);
-        };
+    const fetchReservations = async () => {
+        setLoading(true);
+        const data = await fetchStoreReservations(storeId);
+        setReservations(data as Reservation[]);
+        setLoading(false);
+    };
 
-        loadReservations();
+    useEffect(() => {
+        fetchReservations();
     }, [storeId]);
 
     if (loading) {
         return <LoadingIndicator />;
     }
 
-    const handleStatusChange = (newStatus: ReservationStatus, message: string) => {
+    const handleStatusChange = (reservationId: string, newStatus: ReservationStatus, message: string) => {
         Alert.alert(message, "진행하시겠습니까?", [
             { text: "취소", style: "cancel" },
             {
                 text: "확인",
                 onPress: async () => {
-                    await updateOrderStatus(storeId, reservations.reservationId, newStatus);
-                    // fetchReservations();
+                    await updateOrderStatus(storeId, reservationId, newStatus);
+                    fetchReservations();
                 },
             },
         ]);
-    };
-
-    const getStatusStyle = (status: string) => {
-        switch (status) {
-            case "Pending":
-                return { backgroundColor: "#FFCC00", color: "#000" }; // 노랑
-            case "Canceled":
-                return { backgroundColor: "#FF6B6B", color: "#fff" }; // 빨강
-            case "Reserved":
-                return { backgroundColor: "#1E90FF", color: "#fff" }; // 초록
-            case "Completed":
-                return { backgroundColor: "#4CAF50", color: "#fff" }; // 초록
-            default:
-                return { backgroundColor: "#ccc", color: "#000" };
-        }
     };
 
     return (
@@ -62,14 +49,10 @@ export default function ReservationList() {
 
             {reservations.length > 0 ? (
                 reservations.map((reservation) => (
-                    <View key={reservation.reservationId} style={styles.reservationItem}>
+                    <View key={reservation.reservationId} style={[styles.card, styles[reservation.orderStatus]]}>
                         <View style={styles.header}>
                             <Text style={styles.userName}>예약자: {reservation.userName}</Text>
-                            <View style={[styles.statusButton, { backgroundColor: getStatusStyle(reservation.orderStatus).backgroundColor }]}>
-                                <Text style={{ color: getStatusStyle(reservation.orderStatus).color, fontWeight: "bold" }}>
-                                    {reservation.orderStatus}
-                                </Text>
-                            </View>
+                            <StatusBadge status={reservation.orderStatus} />
                         </View>
 
                         <Text style={styles.reservationNumber}>예약 번호: {reservation.orderNumber}</Text>
@@ -86,32 +69,45 @@ export default function ReservationList() {
                                 </View>
                             ))}
                         </View>
+
+                        {/* 오더 상태에 따른 버튼 */}
+                        {reservation.orderStatus === "Pending" && (
+                            <View style={styles.buttonContainer}>
+                                <TouchableOpacity
+                                    style={styles.confirmButton}
+                                    onPress={() => handleStatusChange(reservation.reservationId, "Reserved", "예약을 확정하시겠습니까?")}
+                                >
+                                    <Text style={styles.buttonText}>예약 확정</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.cancelButton}
+                                    onPress={() => handleStatusChange(reservation.reservationId, "Canceled", "예약을 반려하시겠습니까?")}
+                                >
+                                    <Text style={styles.buttonText}>예약 반려</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+
+                        {reservation.orderStatus === "Reserved" && (
+                            <View style={styles.buttonContainer}>
+                                <TouchableOpacity
+                                    style={styles.confirmButton}
+                                    onPress={() => handleStatusChange(reservation.reservationId, "Completed", "픽업이 완료되었습니까?")}
+                                >
+                                    <Text style={styles.buttonText}>픽업 완료</Text>
+                                </TouchableOpacity>
+                                {/* <TouchableOpacity
+                                    style={styles.cancelButton}
+                                    onPress={() => handleStatusChange(reservation.reservationId, "Canceled", "예약을 반려하시겠습니까?")}
+                                >
+                                    <Text style={styles.buttonText}>예약 반려</Text>
+                                </TouchableOpacity> */}
+                            </View>
+                        )}
                     </View>
                 ))
             ) : (
                 <Text style={styles.noDataText}>예약 내역이 없습니다.</Text>
-            )}
-
-            {reservations.orderStatus === "Pending" && (
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.confirmButton} onPress={() => handleStatusChange("Reserved", "예약을 확정하시겠습니까?")}>
-                        <Text style={styles.buttonText}>예약 확정</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.cancelButton} onPress={() => handleStatusChange("Canceled", "예약을 반려하시겠습니까?")}>
-                        <Text style={styles.buttonText}>예약 반려</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-
-            {reservations.orderStatus === "Reserved" && (
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.confirmButton} onPress={() => handleStatusChange("Completed", "픽업이 완료되었습니까?")}>
-                        <Text style={styles.buttonText}>픽업 완료</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.cancelButton} onPress={() => handleStatusChange("Canceled", "예약을 반려하시겠습니까?")}>
-                        <Text style={styles.buttonText}>예약 반려</Text>
-                    </TouchableOpacity>
-                </View>
             )}
 
             {/* 가게 등록 모달 */}
@@ -125,23 +121,28 @@ const styles = StyleSheet.create({
         padding: 16,
         borderRadius: 10,
         marginBottom: 12,
-        // backgroundColor: "#fff",
     },
-    title: {
-        fontSize: 22,
-        fontWeight: "bold",
-        marginBottom: 20,
-    },
-    reservationItem: {
+    card: {
         padding: 16,
-        borderRadius: 12,
-        marginBottom: 16,
+        borderRadius: 10,
+        marginBottom: 12,
         backgroundColor: "#fff",
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 2,
+    },
+    Pending: {
+        borderColor: "#f39c12",
+        borderWidth: 1,
+    },
+    Reserved: {
+        borderColor: "#3498db",
+        borderWidth: 1,
+    },
+    Completed: {
+        borderColor: "#2ecc71",
+        borderWidth: 1,
+    },
+    Canceled: {
+        borderColor: "#e74c3c",
+        borderWidth: 1,
     },
     header: {
         flexDirection: "row",
@@ -149,14 +150,18 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginBottom: 10,
     },
+    storeName: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    title: {
+        fontSize: 22,
+        fontWeight: "bold",
+        marginBottom: 20,
+    },
     userName: {
         fontSize: 16,
         fontWeight: "600",
-    },
-    statusButton: {
-        paddingVertical: 4,
-        paddingHorizontal: 10,
-        borderRadius: 12,
     },
     reservationNumber: {
         fontSize: 14,
@@ -188,6 +193,7 @@ const styles = StyleSheet.create({
         paddingBottom: 8,
         borderBottomWidth: 1,
         borderBottomColor: "#eee",
+        marginVertical: 2,
     },
     menuName: {
         fontSize: 15,
@@ -210,13 +216,13 @@ const styles = StyleSheet.create({
         marginTop: 12,
     },
     confirmButton: {
-        backgroundColor: "#2ecc71",
+        backgroundColor: "#4A4A4A",
         padding: 8,
         borderRadius: 5,
         marginRight: 8,
     },
     cancelButton: {
-        backgroundColor: "#e74c3c",
+        backgroundColor: "#4A4A4A",
         padding: 8,
         borderRadius: 5,
     },
