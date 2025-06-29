@@ -8,26 +8,24 @@ export function Reservation() {
     const [loading, setLoading] = useState(true);
     const [reservationList, setReservationList] = useState<ReservationType[]>([]);
 
-    // 유저 정보는 Auth나 AsyncStorage에서 가져올 수 있다고 생각
+    // 데이터 가져와야함
     const userId = "1253464264";
 
-    useEffect(() => {
-        const loadReservations = async () => {
-            const data = await fetchUserReservations(userId);
-            setReservationList(data as ReservationType[]);
-            setLoading(false);
-        };
+    const fetchReservations = async () => {
+        setLoading(true);
+        const data = await fetchUserReservations(userId);
+        setReservationList(data as ReservationType[]);
+        setLoading(false);
+    };
 
-        loadReservations();
+    useEffect(() => {
+        fetchReservations();
     }, [userId]);
 
     if (loading) {
         return <LoadingIndicator />;
     }
 
-    if (loading) {
-        return <LoadingIndicator />;
-    }
     return (
         <View style={styles.container}>
             <Text style={styles.title}>나의 예약 리스트</Text>
