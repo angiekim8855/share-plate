@@ -8,8 +8,10 @@ export type Reservation = {
     reservationDate: string; // YYYY-MM-DD 형식
     itemList: ReservationItem[];
     totalPrice: number;
-    orderStatus: "Pending" | "Canceled" | "Completed" | "Reserved";
+    orderStatus: ReservationStatus;
 };
+
+export type ReservationStatus = "Pending" | "Reserved" | "Completed" | "Canceled";
 
 export type rawReservation = Omit<Reservation, "reservationId">;
 
