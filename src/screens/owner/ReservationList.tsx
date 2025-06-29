@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Text, StyleSheet, ScrollView, View } from "react-native";
+import { Text, StyleSheet, ScrollView, View, TouchableOpacity, Alert } from "react-native";
 import StoreRegisterModal from "../../components/StoreRegisterModal";
 import { fetchStoreReservations } from "../../api/owner";
 import LoadingIndicator from "../../components/LoadingIndicator";
+import { updateOrderStatus } from "../../api/reservation";
+import { Reservation, ReservationStatus } from "../../types/reservation";
 
 export default function ReservationList() {
     const [isStoreNotResistered, setIsStoreNotResistered] = useState<boolean>(false);
-    const [reservations, setReservations] = useState<any[]>([]);
+    const [reservations, setReservations] = useState<Reservation[]>([]);
     const [loading, setLoading] = useState(true);
 
     // 데이터 가져와야함
@@ -25,6 +27,19 @@ export default function ReservationList() {
     if (loading) {
         return <LoadingIndicator />;
     }
+
+    const handleStatusChange = (newStatus: ReservationStatus, message: string) => {
+        Alert.alert(message, "진행하시겠습니까?", [
+            { text: "취소", style: "cancel" },
+            {
+                text: "확인",
+                onPress: async () => {
+                    await updateOrderStatus(storeId, reservations.reservationId, newStatus);
+                    // fetchReservations();
+                },
+            },
+        ]);
+    };
 
     const getStatusStyle = (status: string) => {
         switch (status) {
@@ -77,6 +92,28 @@ export default function ReservationList() {
                 <Text style={styles.noDataText}>예약 내역이 없습니다.</Text>
             )}
 
+            {reservations.orderStatus === "Pending" && (
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={styles.confirmButton} onPress={() => handleStatusChange("Reserved", "예약을 확정하시겠습니까?")}>
+                        <Text style={styles.buttonText}>예약 확정</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.cancelButton} onPress={() => handleStatusChange("Canceled", "예약을 반려하시겠습니까?")}>
+                        <Text style={styles.buttonText}>예약 반려</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
+            {reservations.orderStatus === "Reserved" && (
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={styles.confirmButton} onPress={() => handleStatusChange("Completed", "픽업이 완료되었습니까?")}>
+                        <Text style={styles.buttonText}>픽업 완료</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.cancelButton} onPress={() => handleStatusChange("Canceled", "예약을 반려하시겠습니까?")}>
+                        <Text style={styles.buttonText}>예약 반려</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
             {/* 가게 등록 모달 */}
             <StoreRegisterModal isVisible={isStoreNotResistered} onClose={() => setIsStoreNotResistered(false)} />
         </ScrollView>
@@ -86,6 +123,9 @@ export default function ReservationList() {
 const styles = StyleSheet.create({
     container: {
         padding: 16,
+        borderRadius: 10,
+        marginBottom: 12,
+        // backgroundColor: "#fff",
     },
     title: {
         fontSize: 22,
@@ -163,5 +203,25 @@ const styles = StyleSheet.create({
         marginTop: 50,
         fontSize: 16,
         color: "#999",
+    },
+    buttonContainer: {
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        marginTop: 12,
+    },
+    confirmButton: {
+        backgroundColor: "#2ecc71",
+        padding: 8,
+        borderRadius: 5,
+        marginRight: 8,
+    },
+    cancelButton: {
+        backgroundColor: "#e74c3c",
+        padding: 8,
+        borderRadius: 5,
+    },
+    buttonText: {
+        color: "#fff",
+        fontWeight: "bold",
     },
 });
