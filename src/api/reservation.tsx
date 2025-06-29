@@ -1,5 +1,5 @@
-import { doc, setDoc } from "firebase/firestore";
-import { rawReservation } from "../types/reservation";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { rawReservation, ReservationStatus } from "../types/reservation";
 import { db } from "../../firebase";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
@@ -25,6 +25,17 @@ export const createReservation = async (storeId: string, userId: string, reserva
         return reservationId;
     } catch (error) {
         console.error("예약 에러: ", error);
+        throw error;
+    }
+};
+
+export const updateOrderStatus = async (storeId: string, reservationId: string, newStatus: ReservationStatus) => {
+    try {
+        const reservationRef = doc(db, "store", storeId, "reservationList", reservationId);
+        await updateDoc(reservationRef, { orderStatus: newStatus });
+        console.log("예약 상태 업데이트 성공");
+    } catch (error) {
+        console.error("예약 상태 업데이트 실패:", error);
         throw error;
     }
 };
