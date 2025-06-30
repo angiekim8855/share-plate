@@ -1,4 +1,4 @@
-import { doc, setDoc, collection, getDocs } from "firebase/firestore";
+import { doc, setDoc, collection, getDocs, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { Store } from "../types/store";
 import { Item } from "../types/item";
@@ -16,6 +16,23 @@ export const createStore = async ({ storeData, storeId }: StorePropsType) => {
     } catch (error) {
         console.log(error);
         throw error;
+    }
+};
+
+export const fetchStoreData = async (storeId: string) => {
+    try {
+        const storeDocRef = doc(db, "store", storeId);
+        const storeSnapshot = await getDoc(storeDocRef);
+
+        if (storeSnapshot.exists()) {
+            return storeSnapshot.data();
+        } else {
+            console.log("해당 가게를 찾을 수 없습니다.");
+            return null;
+        }
+    } catch (error) {
+        console.error("가게 정보 불러오기 실패:", error);
+        return null;
     }
 };
 
