@@ -1,17 +1,11 @@
-import { Item } from "./item";
-import { Review } from "./review";
-
-export type Restaurant = {
+export type Store = {
     thumbnailImg: any;
     storeId: string;
-    name: string;
-    bizNumber: string;
+    storeName: string;
+    businessNumber: string;
     category: string;
     address: string;
     phone: string;
-    rating: number;
     bankAccount: string;
-    closeTime: string;
-    itemList: Item[];
-    reviewList: Review[];
+    closingTime: string;
 };

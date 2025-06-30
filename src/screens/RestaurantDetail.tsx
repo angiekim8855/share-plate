@@ -1,44 +1,66 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert } from "react-native";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/types";
 import ReservationBottomSheet from "../components/ReservationBottomSheet";
-import { createReservation } from "../services/reservation";
+import { createReservation, decreaseItemStock } from "../api/reservation";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { FallbackImage } from "../components/FallbackImage";
-import { Reservation } from "../types/reservation";
+import { rawReservation, Reservation, ReservationItem } from "../types/reservation";
 import { generateOrderNumber } from "../utils/util";
+import { fetchItemsFromStore } from "../api/owner";
+import { Item } from "../types/item";
+import { Review } from "../types/review";
 
 type RestaurantDetailRouteProp = RouteProp<RootStackParamList, "RestaurantDetail">;
 type Navigation = StackNavigationProp<RootStackParamList, "RestaurantDetail">;
 
 export default function RestaurantDetail() {
+    const userId = "1253464264";
+    const userName = "앤지";
     const navigation = useNavigation<Navigation>();
 
     const route = useRoute<RestaurantDetailRouteProp>();
-    const { restaurant } = route.params;
+    const { store } = route.params;
     const [modalVisible, setModalVisible] = useState(false);
+    const [itemList, setItemList] = useState<Item[]>([]);
+    const [reviewList, setReviewList] = useState<Review[]>([]);
+
+    // 리뷰리스트 불러오기 추가해야함.
+
+    useEffect(() => {
+        const loadItems = async () => {
+            const items = await fetchItemsFromStore(store.storeId);
+            setItemList(items as Item[]);
+        };
+
+        loadItems();
+    }, [store.storeId]);
 
     // 예약하기 버튼 눌렀을 때
-    const handleReserve = async (itemList: { itemId: string; itemName: string; quantity: number; finalPrice: number }[], totalPrice: number) => {
+    const handleReserve = async (itemList: ReservationItem[], totalPrice: number) => {
         try {
-            const reservationData: Reservation = {
+            const reservationData: rawReservation = {
                 orderNumber: generateOrderNumber(),
-                userId: "1253464264",
-                userName: "앤지",
-                storeId: restaurant.storeId,
-                storeName: restaurant.name,
+                userId: userId,
+                userName: userName,
+                storeId: store.storeId,
+                storeName: store.storeName,
                 reservationDate: new Date().toISOString(),
                 itemList: itemList,
                 totalPrice: totalPrice,
-                orderStatus: "pending", // 초기 상태
+                orderStatus: "Pending", // 초기 상태
             };
-            const reservationId = await createReservation(reservationData);
+            await createReservation(store.storeId, userId, reservationData);
 
-            Alert.alert("예약 완료", `예약이 정상적으로 완료되었습니다!\n예약 번호: ${reservationId}`, [
+            // ✅ 예약 성공 시 메뉴 재고 감소
+            await Promise.all(itemList.map((item) => decreaseItemStock(store.storeId, item.itemId, item.stock)));
+
+            Alert.alert("예약 완료", `예약이 정상적으로 완료되었습니다!`, [
                 {
                     text: "확인",
                     onPress: () => {
+                        // todo: 예약페이지 갈때 새로 fetch 안됨, 수량업데이트하고 Home도 새로고침 필요, 그 밖의 새로고침 필요
                         navigation.navigate("Main", {
                             screen: "Reservation",
                         });
@@ -53,38 +75,47 @@ export default function RestaurantDetail() {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
-                <Text style={styles.title}>{restaurant.name}</Text>
-                <Text>📍 {restaurant.address}</Text>
-                <Text>📞 {restaurant.phone}</Text>
-                <Text>⭐ {restaurant.rating}</Text>
-                <Text>⏰ 마감 시간: {new Date(restaurant.closeTime).toLocaleTimeString()}</Text>
+                <Text style={styles.title}>{store.storeName}</Text>
+                <Text style={styles.subtitle}>📍 {store.address}</Text>
+                <Text style={styles.subtitle}>📞 {store.phone}</Text>
+                <Text style={styles.subtitle}>
+                    ⏰ 마감 시간: {new Date(store.closingTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </Text>
 
                 <Text style={styles.sectionTitle}>📋 메뉴</Text>
-                {restaurant.itemList.map((item) => (
-                    <View key={item.itemId} style={styles.menuItem}>
-                        <FallbackImage uri={item.itemImg} style={styles.image} defaultImg={require("../../assets/default-food.jpeg")} />
-                        <View style={styles.menuText}>
-                            <Text>{item.itemName || "메뉴 이름 없음"}</Text>
-                            <View style={styles.priceContainer}>
-                                <Text style={styles.originalPrice}>{item.price.toLocaleString()}원</Text>
-                                <Text style={styles.discountPrice}>{item.finalPrice.toLocaleString()}원</Text>
+                {itemList.length > 0 ? (
+                    itemList.map((item) => (
+                        <View key={item.itemId} style={styles.menuItem}>
+                            <FallbackImage uri={item.thumbnailImg} style={styles.image} defaultImg={require("../../assets/default-food.jpeg")} />
+                            <View style={styles.menuText}>
+                                <Text>{item.itemName || "메뉴 이름 없음"}</Text>
+                                <View style={styles.priceContainer}>
+                                    <Text style={styles.originalPrice}>{item.originalPrice.toLocaleString()}원</Text>
+                                    <Text style={styles.discountPrice}>{item.discountPrice.toLocaleString()}원</Text>
+                                </View>
+                                <Text>수량: {item.stock}</Text>
                             </View>
-                            <Text>수량: {item.stock}</Text>
                         </View>
-                    </View>
-                ))}
+                    ))
+                ) : (
+                    <Text style={styles.noDataText}>등록된 메뉴가 없습니다.</Text>
+                )}
 
                 <Text style={styles.sectionTitle}>📝 리뷰</Text>
-                {restaurant.reviewList.map((review, index) => (
-                    <View style={styles.reviewContainer} key={`${review.reviewId}-${index}`}>
-                        <FallbackImage uri={review.img} style={styles.reviewImage} />
-                        <View style={styles.reviewContent}>
-                            <Text style={styles.userName}>{review.userName || "익명"}</Text>
-                            <Text style={styles.reviewDetail}>{review.reviewDetail}</Text>
-                            <Text style={styles.reviewDate}>{new Date(review.date).toLocaleDateString()}</Text>
+                {reviewList.length > 0 ? (
+                    reviewList.map((review, index) => (
+                        <View style={styles.reviewContainer} key={`${review.reviewId}-${index}`}>
+                            <FallbackImage uri={review.img} style={styles.reviewImage} />
+                            <View style={styles.reviewContent}>
+                                <Text style={styles.userName}>{review.userName || "익명"}</Text>
+                                <Text style={styles.reviewDetail}>{review.reviewDetail}</Text>
+                                <Text style={styles.reviewDate}>{new Date(review.date).toLocaleDateString()}</Text>
+                            </View>
                         </View>
-                    </View>
-                ))}
+                    ))
+                ) : (
+                    <Text style={styles.noDataText}>등록된 리뷰가 없습니다.</Text>
+                )}
             </ScrollView>
             <TouchableOpacity style={styles.reserveButton} onPress={() => setModalVisible(true)}>
                 <Text style={styles.reserveButtonText}>예약하기</Text>
@@ -96,7 +127,7 @@ export default function RestaurantDetail() {
                     handleReserve(itemList, totalPrice);
                     setModalVisible(false);
                 }}
-                item={restaurant.itemList}
+                item={itemList}
             />
         </SafeAreaView>
     );
@@ -113,13 +144,13 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 22,
         fontWeight: "bold",
+        marginBottom: 10,
     },
     subtitle: {
-        marginBottom: 12,
-        color: "gray",
+        marginBottom: 3,
     },
     sectionTitle: {
-        marginTop: 16,
+        marginTop: 30,
         fontSize: 18,
         fontWeight: "600",
     },
@@ -197,5 +228,12 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 18,
         fontWeight: "bold",
+    },
+    noDataText: {
+        textAlign: "center",
+        marginTop: 50,
+        fontSize: 16,
+        color: "#999",
+        fontWeight: "500",
     },
 });
