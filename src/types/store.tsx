@@ -8,4 +8,5 @@ export type Store = {
     phone: string;
     bankAccount: string;
     closingTime: string;
+    ownerId: string;
 };
