@@ -4,7 +4,7 @@ import { Reservation } from "../screens/Reservation";
 import MyPage from "../screens/MyPage";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import RestaurantDetail from "../screens/RestaurantDetail";
-import Home from "../screens/test";
+import Home from "../screens/Home";
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
