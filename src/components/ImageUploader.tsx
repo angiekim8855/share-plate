@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Image, StyleSheet, Alert, Text, TouchableOpacity } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { checkImageExists } from "../utils/util";
 
 interface ImageUploaderProps {
     onImageSelected: React.Dispatch<React.SetStateAction<string>>;
@@ -10,11 +11,29 @@ interface ImageUploaderProps {
 
 export default function ImageUploader({ onImageSelected, initialImage = "", label = "이미지 선택" }: ImageUploaderProps) {
     const [selectedImage, setSelectedImage] = useState(initialImage || "");
+    const [imageExists, setImageExists] = useState(true);
 
-    // 만약 모달 열릴 때 다른 이미지가 넘어오면 초기화
     useEffect(() => {
-        setSelectedImage(initialImage || "");
+        if (initialImage && initialImage.startsWith("http")) {
+            validateImage(initialImage);
+        } else {
+            setSelectedImage(initialImage || "");
+            setImageExists(true);
+        }
     }, [initialImage]);
+
+    const validateImage = async (url: string) => {
+        const exists = await checkImageExists(url);
+        if (exists) {
+            setSelectedImage(url);
+            setImageExists(true);
+        } else {
+            console.warn("이미지가 storage에 없습니다.");
+            setImageExists(false);
+        }
+    };
+
+    const isLocalImage = selectedImage && !selectedImage.startsWith("http");
 
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -33,21 +52,22 @@ export default function ImageUploader({ onImageSelected, initialImage = "", labe
         if (!result.canceled) {
             const uri = result.assets[0].uri;
             setSelectedImage(uri);
+            setImageExists(true);
             onImageSelected(uri); // 부모 컴포넌트에 선택한 로컬 이미지 URI 전달
         }
     };
 
     return (
         <View style={styles.container}>
-            {selectedImage ? (
+            {selectedImage && imageExists ? (
                 <Image source={{ uri: selectedImage }} style={styles.image} />
             ) : (
                 <View style={styles.placeholder}>
-                    <Text style={styles.placeholderText}>이미지를 선택하세요</Text>
+                    <Text style={styles.placeholderText}>이미지 없음</Text>
                 </View>
             )}
             <TouchableOpacity style={styles.button} onPress={pickImage}>
-                <Text style={styles.buttonText}>이미지 선택</Text>
+                <Text style={styles.buttonText}>{label}</Text>
             </TouchableOpacity>
         </View>
     );
