@@ -7,7 +7,6 @@ export const fetchUserReservations = async (userId: string) => {
         const snapshot = await getDocs(reservationRef);
 
         const reservationList = snapshot.docs.map((doc) => ({
-            reservationId: doc.id,
             ...doc.data(),
         }));
 
