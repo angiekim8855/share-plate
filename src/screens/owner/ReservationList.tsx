@@ -14,6 +14,7 @@ export default function ReservationList() {
 
     // 데이터 가져와야함
     const storeId = "4a550e11-e86c-43fa-91a6-02fd5a480331";
+    const userId = "12345";
 
     const fetchReservations = async () => {
         setLoading(true);
@@ -135,7 +136,13 @@ export default function ReservationList() {
             )}
 
             {/* 가게 등록 모달 */}
-            <StoreModal isVisible={isStoreNotResistered} onClose={() => setIsStoreNotResistered(false)} mode="add" initialData={null} />
+            <StoreModal
+                isVisible={isStoreNotResistered}
+                onClose={() => setIsStoreNotResistered(false)}
+                mode="add"
+                initialData={null}
+                ownerId={userId}
+            />
         </ScrollView>
     );
 }
