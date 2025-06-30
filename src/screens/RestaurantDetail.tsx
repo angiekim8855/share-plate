@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Ale
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/types";
 import ReservationBottomSheet from "../components/ReservationBottomSheet";
-import { createReservation } from "../api/reservation";
+import { createReservation, decreaseItemStock } from "../api/reservation";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { FallbackImage } from "../components/FallbackImage";
 import { rawReservation, Reservation, ReservationItem } from "../types/reservation";
@@ -53,10 +53,14 @@ export default function RestaurantDetail() {
             };
             await createReservation(store.storeId, userId, reservationData);
 
+            // ✅ 예약 성공 시 메뉴 재고 감소
+            await Promise.all(itemList.map((item) => decreaseItemStock(store.storeId, item.itemId, item.stock)));
+
             Alert.alert("예약 완료", `예약이 정상적으로 완료되었습니다!`, [
                 {
                     text: "확인",
                     onPress: () => {
+                        // todo: 예약페이지 갈때 새로 fetch 안됨, 수량업데이트하고 Home도 새로고침 필요, 그 밖의 새로고침 필요
                         navigation.navigate("Main", {
                             screen: "Reservation",
                         });

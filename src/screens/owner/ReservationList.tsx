@@ -3,8 +3,8 @@ import { Text, StyleSheet, ScrollView, View, TouchableOpacity, Alert } from "rea
 import StoreRegisterModal from "../../components/StoreRegisterModal";
 import { fetchStoreReservations } from "../../api/owner";
 import LoadingIndicator from "../../components/LoadingIndicator";
-import { updateOrderStatus } from "../../api/reservation";
-import { Reservation, ReservationStatus } from "../../types/reservation";
+import { increaseItemStock, updateOrderStatus } from "../../api/reservation";
+import { Reservation, ReservationItem, ReservationStatus } from "../../types/reservation";
 import StatusBadge from "../../components/StatusBadge";
 
 export default function ReservationList() {
@@ -30,13 +30,25 @@ export default function ReservationList() {
         return <LoadingIndicator />;
     }
 
-    const handleStatusChange = (reservationId: string, newStatus: ReservationStatus, message: string) => {
+    const handleStatusChange = (
+        userId: string,
+        reservationId: string,
+        newStatus: ReservationStatus,
+        message: string,
+        itemList?: ReservationItem[]
+    ) => {
         Alert.alert(message, "진행하시겠습니까?", [
             { text: "취소", style: "cancel" },
             {
                 text: "확인",
                 onPress: async () => {
-                    await updateOrderStatus(storeId, reservationId, newStatus);
+                    await updateOrderStatus(userId, storeId, reservationId, newStatus);
+
+                    // ✅ 예약 취소 시 재고 복구 todo: 캔슬 때만 itemLsit 넘겨주는데, 없을때 에러 처리
+                    if (newStatus === "Canceled" && itemList) {
+                        await Promise.all(itemList.map((item) => increaseItemStock(storeId, item.itemId, item.stock)));
+                    }
+
                     fetchReservations();
                 },
             },
@@ -75,13 +87,23 @@ export default function ReservationList() {
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity
                                     style={styles.reservationButton}
-                                    onPress={() => handleStatusChange(reservation.reservationId, "Reserved", "예약을 확정하시겠습니까?")}
+                                    onPress={() =>
+                                        handleStatusChange(reservation.userId, reservation.reservationId, "Reserved", "예약을 확정하시겠습니까?")
+                                    }
                                 >
                                     <Text style={styles.buttonText}>예약 확정</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={styles.reservationButton}
-                                    onPress={() => handleStatusChange(reservation.reservationId, "Canceled", "예약을 반려하시겠습니까?")}
+                                    onPress={() =>
+                                        handleStatusChange(
+                                            reservation.userId,
+                                            reservation.reservationId,
+                                            "Canceled",
+                                            "예약을 반려하시겠습니까?",
+                                            reservation.itemList
+                                        )
+                                    }
                                 >
                                     <Text style={styles.buttonText}>반려</Text>
                                 </TouchableOpacity>
@@ -92,13 +114,15 @@ export default function ReservationList() {
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity
                                     style={styles.reservationButton}
-                                    onPress={() => handleStatusChange(reservation.reservationId, "Completed", "픽업이 완료되었습니까?")}
+                                    onPress={() =>
+                                        handleStatusChange(reservation.userId, reservation.reservationId, "Completed", "픽업이 완료되었습니까?")
+                                    }
                                 >
                                     <Text style={styles.buttonText}>픽업 완료</Text>
                                 </TouchableOpacity>
                                 {/* <TouchableOpacity
                                     style={styles.reservationButton}
-                                    onPress={() => handleStatusChange(reservation.reservationId, "Canceled", "예약을 반려하시겠습니까?")}
+                                    onPress={() => handleStatusChange(reservation.userId,reservation.reservationId, "Canceled", "예약을 반려하시겠습니까?", reservation.itemList)}
                                 >
                                     <Text style={styles.buttonText}>반려</Text>
                                 </TouchableOpacity> */}
