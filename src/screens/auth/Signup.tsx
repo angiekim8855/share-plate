@@ -24,13 +24,16 @@ export default function Signup() {
             // const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             // const user = userCredential.user;
 
-            // // Firestore에 사용자 추가 정보 저장
+            // // Firestore에 사용자 추가 정보 저장 -> doc.id를 userId로 하자
             // await setDoc(doc(db, "user", user.uid), {
-            //     uid: user.uid,
-            //     email,
+            //     userId: user.uid,
+            //     userType, // 'owner' or 'customer'
+            //     storeIdList,
+            // profileImg,
             //     username,
             //     phone,
-            //     userType, // 'owner' or 'customer'
+            //     email,
+            // favoriteStore,
             //     createdAt: new Date(),
             // });
 
@@ -45,6 +48,7 @@ export default function Signup() {
         <View style={authStyles.container}>
             <Text style={authStyles.title}>회원가입</Text>
 
+            {/* 프로필 이미지 업로드 추가*/}
             <TextInput style={authStyles.input} placeholder="이름" value={username} onChangeText={setUsername} />
             <TextInput
                 style={authStyles.input}
