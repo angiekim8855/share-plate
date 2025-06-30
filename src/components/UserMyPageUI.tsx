@@ -1,8 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Store } from "../types/store";
+import { fetchFavoriteStores } from "../api/user";
+import LoadingIndicator from "./LoadingIndicator";
+import { FallbackImage } from "./FallbackImage";
+import { StoreCategory } from "../constant";
 
 export default function UserMyPageUI({ user, favorites, onEditProfile, onLogout }: any) {
+    const [stores, setStores] = useState<Store[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadFavoriteStores = async () => {
+            try {
+                const fetchedStores = await fetchFavoriteStores(favorites);
+                setStores(fetchedStores);
+            } catch (error) {
+                console.error("즐겨찾기 가게 로딩 실패:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (favorites.length > 0) {
+            loadFavoriteStores();
+        } else {
+            setLoading(false);
+        }
+    }, [favorites]);
+
     const handleLogout = () => {
         Alert.alert("로그아웃", "정말 로그아웃 하시겠습니까?", [
             { text: "취소", style: "cancel" },
@@ -10,23 +37,27 @@ export default function UserMyPageUI({ user, favorites, onEditProfile, onLogout 
         ]);
     };
 
-    // todo: 즐겨찾기 가게 삭제 기능 추가
-    const renderFavoriteItem = ({ item }: any) => (
+    // todo: 즐겨찾기 가게 삭제 기능 추가(옆으로 밀어서)
+    const renderFavoriteItem = ({ item }: { item: Store }) => (
         <View style={styles.card}>
             <Image source={{ uri: item.thumbnailImg }} style={styles.storeImage} />
             <View style={styles.storeInfo}>
                 <Text style={styles.storeName}>{item.storeName}</Text>
-                <Text style={styles.storeCategory}>{item.category}</Text>
+                <Text style={styles.storeCategory}>{StoreCategory[item.category as keyof typeof StoreCategory]}</Text>
             </View>
         </View>
     );
+
+    if (loading) {
+        return <LoadingIndicator />;
+    }
 
     return (
         <SafeAreaView style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <Image source={{ uri: user.profileImage || "https://via.placeholder.com/100" }} style={styles.profileImage} />
-                <Text style={styles.userName}>{user.name}</Text>
+                <FallbackImage uri={user.profileImg} style={styles.profileImage} defaultImg={require("../../assets/profile-default.png")} />
+                <Text style={styles.userName}>{user.userName}</Text>
                 <Text style={styles.userEmail}>{user.email}</Text>
             </View>
 
@@ -34,7 +65,7 @@ export default function UserMyPageUI({ user, favorites, onEditProfile, onLogout 
             <Text style={styles.sectionTitle}>즐겨찾기 가게</Text>
             {favorites.length > 0 ? (
                 <FlatList
-                    data={favorites}
+                    data={stores}
                     renderItem={renderFavoriteItem}
                     keyExtractor={(item) => item.storeId}
                     contentContainerStyle={styles.listContainer}
@@ -72,6 +103,8 @@ const styles = StyleSheet.create({
         height: 100,
         borderRadius: 50,
         marginBottom: 12,
+        borderWidth: 1,
+        borderColor: "#ccc",
     },
     userName: {
         fontSize: 20,
