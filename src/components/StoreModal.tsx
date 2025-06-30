@@ -12,7 +12,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";
 import LoadingIndicator from "./LoadingIndicator";
 
-export default function StoreModal({ isVisible, onClose, mode, initialData = {} }: any) {
+export default function StoreModal({ isVisible, onClose, mode, initialData = {}, ownerId }: any) {
     const [uploading, setLoading] = useState(false);
     const [imageUri, setImageUri] = useState("");
     const [storeName, setStoreName] = useState("");
@@ -88,6 +88,7 @@ export default function StoreModal({ isVisible, onClose, mode, initialData = {} 
                 businessNumber,
                 bankAccount,
                 closingTime: closingTime.toISOString(),
+                ownerId: ownerId || initialData.ownerId,
             };
 
             if (mode === "edit") {
@@ -146,6 +147,7 @@ export default function StoreModal({ isVisible, onClose, mode, initialData = {} 
                         <Picker.Item label="베이커리" value="bakery" color="#222" />
                         <Picker.Item label="과일" value="fruit" color="#222" />
                         <Picker.Item label="샐러드" value="salad" color="#222" />
+                        <Picker.Item label="기타" value="etc" color="#222" />
                     </Picker>
 
                     <Text style={styles.label}>가게 이미지</Text>
