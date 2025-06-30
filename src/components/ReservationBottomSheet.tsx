@@ -2,19 +2,14 @@ import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import Modal from "react-native-modal";
 import { formatPrice } from "../utils/util";
+import { Item } from "../types/item";
+import { ReservationItem } from "../types/reservation";
 
 interface Props {
     isVisible: boolean;
     onClose: () => void;
-    onConfirm: (itemList: { itemId: string; itemName: string; quantity: number; finalPrice: number }[], totalPrice: number) => void;
-    item: {
-        itemId: string;
-        itemName: string;
-        itemImg?: string;
-        price: number;
-        finalPrice: number;
-        stock: number;
-    }[];
+    onConfirm: (itemList: ReservationItem[], totalPrice: number) => void;
+    item: Item[];
 }
 
 const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) => {
@@ -37,7 +32,7 @@ const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) 
     const getTotalPrice = () => {
         return item.reduce((total, item) => {
             const quantity = quantities[item.itemId] || 0;
-            return total + item.finalPrice * quantity;
+            return total + item.discountPrice * quantity;
         }, 0);
     };
 
@@ -47,8 +42,8 @@ const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) 
             .map((item) => ({
                 itemId: item.itemId,
                 itemName: item.itemName,
-                quantity: quantities[item.itemId],
-                finalPrice: item.finalPrice,
+                stock: quantities[item.itemId],
+                discountPrice: item.discountPrice,
             }));
         onConfirm(itemList, getTotalPrice());
     };
@@ -61,14 +56,14 @@ const ReservationBottomSheet = ({ isVisible, onClose, onConfirm, item }: Props) 
                     {item.map((menuItem) => (
                         <View key={menuItem.itemId} style={styles.menuItem}>
                             <Image
-                                source={menuItem.itemImg ? { uri: menuItem.itemImg } : require("../../assets/default-food.jpeg")}
+                                source={menuItem.thumbnailImg ? { uri: menuItem.thumbnailImg } : require("../../assets/default-food.jpeg")}
                                 style={styles.image}
                             />
                             <View style={styles.menuInfo}>
                                 <Text style={styles.name}>{menuItem.itemName}</Text>
                                 <View style={styles.priceRow}>
-                                    <Text style={styles.originalPrice}>₩{formatPrice(menuItem.price)}</Text>
-                                    <Text style={styles.finalPrice}>₩{formatPrice(menuItem.finalPrice)}</Text>
+                                    <Text style={styles.originalPrice}>₩{formatPrice(menuItem.originalPrice)}</Text>
+                                    <Text style={styles.finalPrice}>₩{formatPrice(menuItem.discountPrice)}</Text>
                                 </View>
                                 <View style={styles.quantityContainer}>
                                     <Text style={styles.availableText}>남은 수량: {menuItem.stock}개</Text>
