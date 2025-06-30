@@ -1,27 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import UserMyPageUI from "../components/UserMyPageUI";
+import ProfileEditModal from "../components/ProfileEditModal";
 
 export default function UserMyPage() {
-    const [user, setUser] = useState(null);
-    const [favorites, setFavorites] = useState([]);
+    const [isProfileModalVisible, setProfileModalVisible] = useState(false);
+    // const [user, setUser] = useState(null);
 
-    //todo: 로그인 계정 fetch
-    const fetchData = async () => {
-        // const userData = await getUserInfo();
-        // const favData = await getUserFavorites();
-        // setUser(userData);
-        // setFavorites(favData);
-    };
+    // //todo: 로그인 계정 fetch
+    // const fetchData = async () => {
+    //     // const userData = await getUserInfo();
+    //     // const favData = await getUserFavorites();
+    //     // setUser(userData);
+    //     // setFavorites(favData);
+    // };
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    // 프로필 수정 : 모달
-    const handleEditProfile = () => {
-        // navigation.navigate("EditProfile");
-    };
+    // useEffect(() => {
+    //     fetchData();
+    // }, []);
 
     // todo: 로그인 에러 해결하고 ㄱㄱ
     const handleLogout = async () => {
@@ -33,40 +29,25 @@ export default function UserMyPage() {
 
     // return <UserMyPageUI user={user} favorites={favorites} onEditProfile={handleEditProfile} onLogout={handleLogout} />;
 
-    //------ui test
-    const mockUser = {
-        name: "김은지",
-        email: "eunji.kim@example.com",
-        profileImage: "https://randomuser.me/api/portraits/women/44.jpg",
+    const user = {
+        userId: "3333333333",
+        userType: "owner",
+        storeIdList: [],
+        profileImg: "",
+        userName: "eunji",
+        phone: "01012345678",
+        email: "abc@gmail.com",
+        favoriteStore: ["4a550e11-e86c-43fa-91a6-02fd5a480331", "c5b3e525-8806-4037-a00b-4c228f699771"],
+        createAt: "",
     };
 
-    const mockFavorites = [
-        {
-            storeId: "store1",
-            storeName: "맛있는 한식당",
-            category: "한식",
-            thumbnailImg: "https://source.unsplash.com/100x100/?korean-food",
-        },
-        {
-            storeId: "store2",
-            storeName: "트렌디 카페",
-            category: "디저트",
-            thumbnailImg: "https://source.unsplash.com/100x100/?dessert,cafe",
-        },
-        {
-            storeId: "store3",
-            storeName: "프렌치 레스토랑",
-            category: "양식",
-            thumbnailImg: "https://source.unsplash.com/100x100/?french-food",
-        },
-    ];
+    const handleOpenModal = () => setProfileModalVisible(true);
+    const handleCloseModal = () => setProfileModalVisible(false);
 
     return (
-        <UserMyPageUI
-            user={mockUser}
-            favorites={mockFavorites}
-            onEditProfile={() => console.log("프로필 수정 클릭")}
-            onLogout={() => console.log("로그아웃 클릭")}
-        />
+        <>
+            <UserMyPageUI user={user} favorites={user.favoriteStore} onEditProfile={handleOpenModal} onLogout={handleLogout} />
+            <ProfileEditModal isVisible={isProfileModalVisible} onClose={handleCloseModal} initialData={user} />
+        </>
     );
 }
