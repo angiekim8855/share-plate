@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, Alert, Platform, KeyboardAvoidingView, ScrollView, TouchableOpacity } from "react-native";
 import Modal from "react-native-modal";
 import { Picker } from "@react-native-picker/picker";
@@ -6,15 +6,15 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
-import { createStore } from "../api/owner";
+import { createStore, updateStore } from "../api/owner";
 import ImageUploader from "./ImageUploader";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";
 import LoadingIndicator from "./LoadingIndicator";
 
-export default function StoreRegisterModal({ isVisible, onClose }: any) {
-    const [imageUri, setImageUri] = useState("");
+export default function StoreModal({ isVisible, onClose, mode, initialData = {} }: any) {
     const [uploading, setLoading] = useState(false);
+    const [imageUri, setImageUri] = useState("");
     const [storeName, setStoreName] = useState("");
     const [address, setAddress] = useState("");
     const [phone, setPhone] = useState("");
@@ -24,20 +24,27 @@ export default function StoreRegisterModal({ isVisible, onClose }: any) {
     const [closingTime, setClosingTime] = useState(new Date());
     const [showTimePicker, setShowTimePicker] = useState(false);
 
-    const handleChange = (event: DateTimePickerEvent, selectedTime?: Date) => {
-        setShowTimePicker(Platform.OS === "ios"); // iOS는 항상 띄우고 Android는 닫기
-        if (selectedTime) {
-            setClosingTime(selectedTime);
-        }
-    };
+    // 모달 열릴 때마다 초기값 세팅
+    useEffect(() => {
+        setImageUri(initialData?.thumbnailImg || "");
+        setStoreName(initialData?.storeName || "");
+        setCategory(initialData?.category || "");
+        setAddress(initialData?.address || "");
+        setPhone(initialData?.phone || "");
+        setBusinessNumber(initialData?.businessNumber || "");
+        setBankAccount(initialData?.bankAccount || "");
+        setClosingTime(initialData?.closingTime ? new Date(initialData.closingTime) : new Date());
+    }, [isVisible]);
 
     const uploadImage = async (uri: string) => {
         try {
+            if (!uri || uri.startsWith("http")) return uri; // 기존 이미지 유지
+
             const response = await fetch(uri);
             const blob = await response.blob();
 
             const imageId = `${Date.now().toString(36)}-${Math.random().toString(36).substr(2, 5)}`;
-            const imageRef = ref(storage, `storeImages/${imageId}`);
+            const imageRef = ref(storage, `menuImages/${imageId}`);
 
             await uploadBytes(imageRef, blob);
             const downloadURL = await getDownloadURL(imageRef);
@@ -49,7 +56,14 @@ export default function StoreRegisterModal({ isVisible, onClose }: any) {
         }
     };
 
-    const handleRegister = async () => {
+    const handleChange = (event: DateTimePickerEvent, selectedTime?: Date) => {
+        setShowTimePicker(Platform.OS === "ios"); // iOS는 항상 띄우고 Android는 닫기
+        if (selectedTime) {
+            setClosingTime(selectedTime);
+        }
+    };
+
+    const handleSubmit = async () => {
         if (!imageUri || !storeName || !address || !phone || !businessNumber || !category || !bankAccount) {
             Alert.alert("모든 항목을 입력해주세요.");
             return;
@@ -63,30 +77,42 @@ export default function StoreRegisterModal({ isVisible, onClose }: any) {
                 setLoading(false);
                 return;
             }
-            const storeId = uuidv4();
 
-            const storeData = {
-                thumbnailImg: imageUrl,
-                storeId,
+            const newStoreData = {
+                storeId: initialData?.storeId || uuidv4(),
                 storeName,
-                businessNumber,
                 category,
+                thumbnailImg: imageUrl,
                 address,
                 phone,
+                businessNumber,
                 bankAccount,
                 closingTime: closingTime.toISOString(),
             };
-            await createStore({ storeData, storeId });
 
-            Alert.alert("등록 완료", "가게 정보가 성공적으로 등록되었습니다.", [
-                {
-                    text: "확인",
-                    onPress: () => {
-                        setLoading(false);
-                        onClose();
+            if (mode === "edit") {
+                await updateStore(newStoreData);
+                Alert.alert("수정 완료", "가게 정보가 성공적으로 수정되었습니다.", [
+                    {
+                        text: "확인",
+                        onPress: () => {
+                            setLoading(false);
+                            onClose();
+                        },
                     },
-                },
-            ]);
+                ]);
+            } else {
+                await createStore(newStoreData);
+                Alert.alert("등록 완료", "가게 정보가 성공적으로 등록되었습니다.", [
+                    {
+                        text: "확인",
+                        onPress: () => {
+                            setLoading(false);
+                            onClose();
+                        },
+                    },
+                ]);
+            }
         } catch (error) {
             setLoading(false);
             Alert.alert("오류 발생", "잠시 후 다시 시도해주세요.");
@@ -95,9 +121,9 @@ export default function StoreRegisterModal({ isVisible, onClose }: any) {
     };
 
     return (
-        <Modal isVisible={isVisible} style={styles.modal}>
+        <Modal isVisible={isVisible} onBackdropPress={onClose} style={styles.modal}>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.sheet}>
-                <Text style={styles.title}>가게 등록</Text>
+                <Text style={styles.title}>{mode === "edit" ? "가게 수정" : "가게 등록"}</Text>
                 <ScrollView style={styles.scrollView}>
                     <Text style={styles.label}>가게이름</Text>
                     <TextInput
@@ -123,7 +149,7 @@ export default function StoreRegisterModal({ isVisible, onClose }: any) {
                     </Picker>
 
                     <Text style={styles.label}>가게 이미지</Text>
-                    <ImageUploader onImageSelected={setImageUri} />
+                    <ImageUploader onImageSelected={setImageUri} initialImage={imageUri} />
 
                     <Text style={styles.label}>주소</Text>
                     <TextInput
@@ -185,8 +211,8 @@ export default function StoreRegisterModal({ isVisible, onClose }: any) {
                     {uploading ? (
                         <LoadingIndicator />
                     ) : (
-                        <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-                            <Text style={styles.registerText}>등록하기</Text>
+                        <TouchableOpacity style={styles.registerButton} onPress={handleSubmit}>
+                            <Text style={styles.registerText}>{mode === "edit" ? "수정하기" : "등록하기"}</Text>
                         </TouchableOpacity>
                     )}
                 </View>

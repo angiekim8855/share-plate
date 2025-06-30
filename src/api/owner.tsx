@@ -1,15 +1,11 @@
-import { doc, setDoc, collection, getDocs, getDoc } from "firebase/firestore";
+import { doc, setDoc, collection, getDocs, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { Store } from "../types/store";
 import { Item } from "../types/item";
 
-interface StorePropsType {
-    storeData: Store;
-    storeId: string;
-}
-export const createStore = async ({ storeData, storeId }: StorePropsType) => {
+export const createStore = async (storeData: Store) => {
     try {
-        const docRef = doc(db, "store", storeId); // storeId를 문서 ID로 지정
+        const docRef = doc(db, "store", storeData.storeId); // storeId를 문서 ID로 지정
         await setDoc(docRef, storeData);
 
         return docRef.id;
@@ -33,6 +29,18 @@ export const fetchStoreData = async (storeId: string) => {
     } catch (error) {
         console.error("가게 정보 불러오기 실패:", error);
         return null;
+    }
+};
+
+export const updateStore = async (storeData: Store) => {
+    try {
+        const docRef = doc(db, "store", storeData.storeId);
+        await updateDoc(docRef, storeData);
+
+        return docRef.id;
+    } catch (error) {
+        console.log(error);
+        throw error;
     }
 };
 
