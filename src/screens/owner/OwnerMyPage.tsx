@@ -10,7 +10,6 @@ export default function OwnerMyPage() {
     const [store, setStore] = useState<Store>();
     const [reservations, setReservations] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [imageError, setImageError] = useState(false);
 
     useEffect(() => {
         loadStoreData();
@@ -96,6 +95,12 @@ export default function OwnerMyPage() {
                     {/* <Text style={styles.storeInfoText}>총 판매량: {totalItems}개</Text>
                 <Text style={styles.storeInfoText}>총 수익: {totalSales.toLocaleString()}원</Text>
                 <Text style={styles.storeInfoText}>예약 건수: {totalOrders}건</Text> */}
+                </View>
+
+                {/* 리뷰 관리 */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>리뷰 관리</Text>
+                    <Text style={styles.storeInfoText}>개발 예정</Text>
                 </View>
 
                 {/* 로그아웃 */}
