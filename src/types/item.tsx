@@ -1,9 +1,9 @@
 export type Item = {
     itemId: string;
     itemName: string;
-    itemImg: string;
-    price: number;
-    finalPrice: number;
+    thumbnailImg: string;
+    originalPrice: number;
+    discountPrice: number;
     addDate: string;
     stock: number;
 };
