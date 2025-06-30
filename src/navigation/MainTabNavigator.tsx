@@ -1,10 +1,10 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Reservation } from "../screens/Reservation";
-import MyPage from "../screens/MyPage";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import RestaurantDetail from "../screens/RestaurantDetail";
 import Home from "../screens/Home";
+import UserMyPage from "../screens/UserMyPage";
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -23,7 +23,7 @@ export default function MainTabNavigator() {
         <Tab.Navigator>
             <Tab.Screen name="Home" component={HomeStackNavigator} />
             <Tab.Screen name="Reservation" component={Reservation} />
-            <Tab.Screen name="MyPage" component={MyPage} />
+            <Tab.Screen name="MyPage" component={UserMyPage} />
         </Tab.Navigator>
     );
 }
