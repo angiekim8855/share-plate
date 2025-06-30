@@ -7,6 +7,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { RootStackParamList } from "../../navigation/types";
 import { authStyles } from "../../styles/authStyles";
+import { db } from "../../../firebase";
 
 type Navigation = StackNavigationProp<RootStackParamList>;
 
@@ -24,7 +25,7 @@ export default function Signup() {
             // const user = userCredential.user;
 
             // // Firestore에 사용자 추가 정보 저장
-            // await setDoc(doc(db, "users", user.uid), {
+            // await setDoc(doc(db, "user", user.uid), {
             //     uid: user.uid,
             //     email,
             //     username,
