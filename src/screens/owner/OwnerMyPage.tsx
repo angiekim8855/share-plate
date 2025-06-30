@@ -3,8 +3,10 @@ import { useState, useEffect } from "react";
 import { fetchStoreData } from "../../api/owner";
 import { Store } from "../../types/store";
 import { FallbackImage } from "../../components/FallbackImage";
+import StoreModal from "../../components/StoreModal";
 
-export default function OwnerMyPage({ storeId }: { storeId: string }) {
+export default function OwnerMyPage() {
+    const storeId = "4a550e11-e86c-43fa-91a6-02fd5a480331";
     const [store, setStore] = useState<Store>();
     const [reservations, setReservations] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
@@ -15,15 +17,14 @@ export default function OwnerMyPage({ storeId }: { storeId: string }) {
     }, []);
 
     const loadStoreData = async () => {
-        // const storeData = await fetchStoreData(storeId);
-        const storeData = await fetchStoreData("4a550e11-e86c-43fa-91a6-02fd5a480331");
+        const storeData = await fetchStoreData(storeId);
         // const reservationData = await fetchStoreReservations(storeId);
         setStore(storeData as Store);
         // setReservations(reservationData);
     };
 
     const handleLogout = async () => {
-        console.log("로그아웃!");
+        console.log("to do: 로그아웃!");
         // await auth.signOut();
     };
 
@@ -36,70 +37,74 @@ export default function OwnerMyPage({ storeId }: { storeId: string }) {
     // }, 0);
 
     return (
-        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-            {/* 가게 정보 */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>가게 정보</Text>
-                {store && (
-                    <View>
-                        <FallbackImage uri={store.thumbnailImg} style={styles.noImageBox} />
+        <>
+            <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+                {/* 가게 정보 */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>가게 정보</Text>
+                    {store && (
+                        <View>
+                            <FallbackImage uri={store.thumbnailImg} style={styles.noImageBox} />
 
-                        <View style={styles.infoCard}>
-                            <Text style={styles.label}>가게명</Text>
-                            <Text style={styles.value}>{store.storeName}</Text>
+                            <View style={styles.infoCard}>
+                                <Text style={styles.label}>가게명</Text>
+                                <Text style={styles.value}>{store.storeName}</Text>
+                            </View>
+
+                            <View style={styles.infoCard}>
+                                <Text style={styles.label}>카테고리</Text>
+                                <Text style={styles.value}>{store.category}</Text>
+                            </View>
+
+                            <View style={styles.infoCard}>
+                                <Text style={styles.label}>사업자 번호</Text>
+                                <Text style={styles.value}>{store.businessNumber}</Text>
+                            </View>
+
+                            <View style={styles.infoCard}>
+                                <Text style={styles.label}>은행 계좌</Text>
+                                <Text style={styles.value}>{store.bankAccount}</Text>
+                            </View>
+
+                            <View style={styles.infoCard}>
+                                <Text style={styles.label}>전화번호</Text>
+                                <Text style={styles.value}>{store.phone}</Text>
+                            </View>
+
+                            <View style={styles.infoCard}>
+                                <Text style={styles.label}>주소</Text>
+                                <Text style={styles.value}>{store.address}</Text>
+                            </View>
+
+                            <View style={styles.infoCard}>
+                                <Text style={styles.label}>마감 시간</Text>
+                                <Text style={styles.value}>
+                                    {new Date(store.closingTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                                </Text>
+                            </View>
                         </View>
+                    )}
+                    <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
+                        <Text style={styles.buttonText}>가게 정보 수정</Text>
+                    </TouchableOpacity>
+                </View>
 
-                        <View style={styles.infoCard}>
-                            <Text style={styles.label}>카테고리</Text>
-                            <Text style={styles.value}>{store.category}</Text>
-                        </View>
-
-                        <View style={styles.infoCard}>
-                            <Text style={styles.label}>사업자 번호</Text>
-                            <Text style={styles.value}>{store.businessNumber}</Text>
-                        </View>
-
-                        <View style={styles.infoCard}>
-                            <Text style={styles.label}>은행 계좌</Text>
-                            <Text style={styles.value}>{store.bankAccount}</Text>
-                        </View>
-
-                        <View style={styles.infoCard}>
-                            <Text style={styles.label}>전화번호</Text>
-                            <Text style={styles.value}>{store.phone}</Text>
-                        </View>
-
-                        <View style={styles.infoCard}>
-                            <Text style={styles.label}>주소</Text>
-                            <Text style={styles.value}>{store.address}</Text>
-                        </View>
-
-                        <View style={styles.infoCard}>
-                            <Text style={styles.label}>마감 시간</Text>
-                            <Text style={styles.value}>
-                                {new Date(store.closingTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                            </Text>
-                        </View>
-                    </View>
-                )}
-                <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-                    <Text style={styles.buttonText}>가게 정보 수정</Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* 정산 내역 */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>정산 내역</Text>
-                {/* <Text style={styles.storeInfoText}>총 판매량: {totalItems}개</Text>
+                {/* 정산 내역 */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>정산 내역</Text>
+                    <Text style={styles.storeInfoText}>개발 예정</Text>
+                    {/* <Text style={styles.storeInfoText}>총 판매량: {totalItems}개</Text>
                 <Text style={styles.storeInfoText}>총 수익: {totalSales.toLocaleString()}원</Text>
                 <Text style={styles.storeInfoText}>예약 건수: {totalOrders}건</Text> */}
-            </View>
+                </View>
 
-            {/* 로그아웃 */}
-            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                <Text style={styles.buttonText}>로그아웃</Text>
-            </TouchableOpacity>
-        </ScrollView>
+                {/* 로그아웃 */}
+                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                    <Text style={styles.buttonText}>로그아웃</Text>
+                </TouchableOpacity>
+            </ScrollView>
+            <StoreModal isVisible={modalVisible} onClose={() => setModalVisible(false)} mode="edit" initialData={store} />
+        </>
     );
 }
 
