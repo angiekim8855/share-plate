@@ -6,7 +6,7 @@ import ReservationBottomSheet from "../components/ReservationBottomSheet";
 import { createReservation, decreaseItemStock } from "../api/reservation";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { FallbackImage } from "../components/FallbackImage";
-import { rawReservation, Reservation, ReservationItem } from "../types/reservation";
+import { rawReservation, ReservationItem } from "../types/reservation";
 import { generateOrderNumber } from "../utils/util";
 import { fetchItemsFromStore } from "../api/owner";
 import { Item } from "../types/item";
@@ -26,7 +26,7 @@ export default function RestaurantDetail() {
     const [itemList, setItemList] = useState<Item[]>([]);
     const [reviewList, setReviewList] = useState<Review[]>([]);
 
-    // 리뷰리스트 불러오기 추가해야함.
+    // todo: 리뷰리스트 불러오기 추가해야함.
 
     useEffect(() => {
         const loadItems = async () => {
