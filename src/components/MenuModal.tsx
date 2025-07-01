@@ -9,8 +9,8 @@ import ImageUploader from "./ImageUploader";
 import LoadingIndicator from "./LoadingIndicator";
 
 export default function MenuModal({ isVisible, onClose, onSubmit, mode, initialData = {} }: any) {
-    const [imageUri, setImageUri] = useState("");
     const [uploading, setUploading] = useState(false);
+    const [imageUri, setImageUri] = useState("");
     const [itemName, setItemName] = useState("");
     const [originalPrice, setOriginalPrice] = useState("");
     const [discountPrice, setDiscountPrice] = useState("");
