@@ -32,9 +32,7 @@ export default function Home() {
                     phone: data.phone ?? "",
                     bankAccount: data.bankAccount ?? "",
                     closingTime: data.closingTime ?? "",
-                    itemList: data.itemList ?? [],
-                    reviewList: data.reviewList ?? [],
-                    reservationList: data.reservationList ?? [],
+                    ownerId: data.ownerId ?? "",
                 } as Store;
             });
             setStoreList(stores);

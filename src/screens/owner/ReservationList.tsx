@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Text, StyleSheet, ScrollView, View, TouchableOpacity, Alert } from "react-native";
-import StoreRegisterModal from "../../components/StoreRegisterModal";
 import { fetchStoreReservations } from "../../api/owner";
 import LoadingIndicator from "../../components/LoadingIndicator";
 import { increaseItemStock, updateOrderStatus } from "../../api/reservation";
 import { Reservation, ReservationItem, ReservationStatus } from "../../types/reservation";
 import StatusBadge from "../../components/StatusBadge";
+import StoreModal from "../../components/StoreModal";
 
 export default function ReservationList() {
     const [isStoreNotResistered, setIsStoreNotResistered] = useState<boolean>(false);
@@ -14,6 +14,7 @@ export default function ReservationList() {
 
     // 데이터 가져와야함
     const storeId = "4a550e11-e86c-43fa-91a6-02fd5a480331";
+    const userId = "12345";
 
     const fetchReservations = async () => {
         setLoading(true);
@@ -135,7 +136,13 @@ export default function ReservationList() {
             )}
 
             {/* 가게 등록 모달 */}
-            <StoreRegisterModal isVisible={isStoreNotResistered} onClose={() => setIsStoreNotResistered(false)} />
+            <StoreModal
+                isVisible={isStoreNotResistered}
+                onClose={() => setIsStoreNotResistered(false)}
+                mode="add"
+                initialData={null}
+                ownerId={userId}
+            />
         </ScrollView>
     );
 }
