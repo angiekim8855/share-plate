@@ -21,7 +21,17 @@ function HomeStackNavigator() {
 export default function MainTabNavigator() {
     return (
         <Tab.Navigator>
-            <Tab.Screen name="Home" component={HomeStackNavigator} />
+            <Tab.Screen
+                name="Home"
+                component={HomeStackNavigator}
+                listeners={({ navigation }) => ({
+                    tabPress: () => {
+                        navigation.navigate("Home", {
+                            screen: "HomeMain",
+                        });
+                    },
+                })}
+            />
             <Tab.Screen name="Reservation" component={Reservation} />
             <Tab.Screen name="MyPage" component={UserMyPage} />
         </Tab.Navigator>
