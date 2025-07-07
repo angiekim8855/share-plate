@@ -1,4 +1,4 @@
-import { collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { collection, doc, getDocs, orderBy, query, updateDoc, where } from "firebase/firestore";
 import { db } from "../../firebase";
 import { Store } from "../types/store";
 import { User } from "../types/user";
@@ -20,7 +20,10 @@ export const updateUserProfile = async (userData: User) => {
 export const fetchUserReservations = async (userId: string) => {
     try {
         const reservationRef = collection(db, "user", userId, "reservationList");
-        const snapshot = await getDocs(reservationRef);
+
+        const q = query(reservationRef, orderBy("reservationDate", "desc"));
+
+        const snapshot = await getDocs(q);
 
         const reservationList = snapshot.docs.map((doc) => ({
             ...doc.data(),
