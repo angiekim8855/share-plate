@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from "react-native";
 import { ReservationItem, Reservation as ReservationType } from "../types/reservation";
-import { fetchUserReservations } from "../api/user";
+import { fetchUserReservations } from "../services/user";
 import LoadingIndicator from "../components/LoadingIndicator";
 import StatusBadge from "../components/StatusBadge";
 import { ORDER_STATUS_COLORS } from "../styles/statusStyles";
-import { deleteReservation, increaseItemStock } from "../api/reservation";
+import { deleteReservation, increaseItemStock } from "../services/reservation";
 import { useFocusEffect } from "@react-navigation/native";
 
 export function Reservation() {

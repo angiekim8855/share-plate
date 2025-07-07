@@ -6,7 +6,7 @@ import { Item } from "../../types/item";
 import ItemList from "../../components/ItemList";
 import { Alert } from "react-native";
 import MenuModal from "../../components/MenuModal";
-import { addItemToStore, fetchItemsFromStore, updateItemInStore } from "../../api/owner";
+import { addItemToStore, fetchItemsFromStore, updateItemInStore } from "../../services/owner";
 import LoadingIndicator from "../../components/LoadingIndicator";
 
 export default function ItemManage() {

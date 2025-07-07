@@ -3,12 +3,12 @@ import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Ale
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/types";
 import ReservationBottomSheet from "../components/ReservationBottomSheet";
-import { createReservation, decreaseItemStock } from "../api/reservation";
+import { createReservation, decreaseItemStock } from "../services/reservation";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { FallbackImage } from "../components/FallbackImage";
 import { rawReservation, ReservationItem } from "../types/reservation";
 import { generateOrderNumber } from "../utils/util";
-import { fetchItemsFromStore } from "../api/owner";
+import { fetchItemsFromStore } from "../services/owner";
 import { Item } from "../types/item";
 import { Review } from "../types/review";
 

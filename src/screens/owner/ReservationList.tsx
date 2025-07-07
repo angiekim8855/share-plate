@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Text, StyleSheet, ScrollView, View, TouchableOpacity, Alert } from "react-native";
-import { fetchStoreReservations } from "../../api/owner";
+import { fetchStoreReservations } from "../../services/owner";
 import LoadingIndicator from "../../components/LoadingIndicator";
-import { increaseItemStock, updateOrderStatus } from "../../api/reservation";
+import { increaseItemStock, updateOrderStatus } from "../../services/reservation";
 import { Reservation, ReservationItem, ReservationStatus } from "../../types/reservation";
 import StatusBadge from "../../components/StatusBadge";
 import StoreModal from "../../components/StoreModal";

@@ -4,7 +4,7 @@ import Modal from "react-native-modal";
 import ImageUploader from "./ImageUploader";
 import LoadingIndicator from "./LoadingIndicator";
 import { User } from "../types/user";
-import { updateUserProfile } from "../api/user";
+import { updateUserProfile } from "../services/user";
 
 export default function ProfileEditModal({ isVisible, onClose, initialData }: any) {
     const [uploading, setUploading] = useState(false);
