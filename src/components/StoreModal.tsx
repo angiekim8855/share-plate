@@ -6,7 +6,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
-import { createStore, updateStore } from "../api/owner";
+import { createStore, updateStore } from "../services/owner";
 import ImageUploader from "./ImageUploader";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";

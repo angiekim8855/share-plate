@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 import { useState, useEffect } from "react";
-import { fetchStoreData } from "../../api/owner";
+import { fetchStoreData } from "../../services/owner";
 import { Store } from "../../types/store";
 import { FallbackImage } from "../../components/FallbackImage";
 import StoreModal from "../../components/StoreModal";
