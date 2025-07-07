@@ -91,7 +91,7 @@ export default function RestaurantDetail() {
                                     <Text style={styles.originalPrice}>{item.originalPrice.toLocaleString()}원</Text>
                                     <Text style={styles.discountPrice}>{item.discountPrice.toLocaleString()}원</Text>
                                 </View>
-                                <Text>수량: {item.stock}</Text>
+                                {item.stock === 0 ? <Text style={styles.soldOut}>SOLD OUT</Text> : <Text>재고: {item.stock}개</Text>}
                             </View>
                         </View>
                     ))
@@ -179,6 +179,11 @@ const styles = StyleSheet.create({
         color: "#E63946",
         fontWeight: "bold",
         fontSize: 18,
+    },
+    soldOut: {
+        color: "black",
+        fontWeight: "bold",
+        marginTop: 4,
     },
     reviewItem: {
         marginTop: 12,
