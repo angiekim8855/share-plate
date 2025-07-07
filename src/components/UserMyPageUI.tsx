@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Store } from "../types/store";
-import { fetchFavoriteStores } from "../api/user";
+import { fetchFavoriteStores } from "../services/user";
 import LoadingIndicator from "./LoadingIndicator";
 import { FallbackImage } from "./FallbackImage";
 import { StoreCategory } from "../constant";
