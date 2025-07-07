@@ -27,7 +27,6 @@ export default function RestaurantDetail() {
     const [reviewList, setReviewList] = useState<Review[]>([]);
 
     // todo: 리뷰리스트 불러오기 추가해야함.
-
     useEffect(() => {
         const loadItems = async () => {
             const items = await fetchItemsFromStore(store.storeId);
@@ -60,7 +59,6 @@ export default function RestaurantDetail() {
                 {
                     text: "확인",
                     onPress: () => {
-                        // todo: 예약페이지 갈때 새로 fetch 안됨, 수량업데이트하고 Home도 새로고침 필요, 그 밖의 새로고침 필요
                         navigation.navigate("Main", {
                             screen: "Reservation",
                         });
