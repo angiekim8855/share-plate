@@ -4,10 +4,10 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Picker } from "@react-native-picker/picker";
 import { doc, setDoc } from "firebase/firestore";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { RootStackParamList } from "../../navigation/types";
 import { authStyles } from "../../styles/authStyles";
 import { db } from "../../../firebase";
+import { signUp } from "../../services/auth";
 
 type Navigation = StackNavigationProp<RootStackParamList>;
 
@@ -16,28 +16,28 @@ export default function Signup() {
     const [phone, setPhone] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [username, setUsername] = useState("");
+    const [userName, setUserName] = useState("");
     const [userType, setUserType] = useState<"owner" | "customer">("customer");
 
     const handleSignup = async () => {
         try {
-            // const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            // const user = userCredential.user;
+            const user = await signUp(email, password);
 
-            // // Firestore에 사용자 추가 정보 저장 -> doc.id를 userId로 하자
-            // await setDoc(doc(db, "user", user.uid), {
-            //     userId: user.uid,
-            //     userType, // 'owner' or 'customer'
-            //     storeIdList,
-            // profileImg,
-            //     username,
-            //     phone,
-            //     email,
-            // favoriteStore,
-            //     createdAt: new Date(),
-            // });
+            // Firestore에 사용자 추가 정보 저장
+            await setDoc(doc(db, "user", user.uid), {
+                userId: user.uid,
+                userType,
+                userName,
+                phone,
+                email,
+                profileImage: "",
+                storeIdList: [],
+                favoriteStore: [],
+                createdAt: new Date(),
+                storeId: "",
+            });
 
-            // Alert.alert("회원가입 성공", "이제 로그인해주세요!");
+            Alert.alert("회원가입 성공", "이제 로그인해주세요!");
             navigation.navigate("Login");
         } catch (error: any) {
             Alert.alert("회원가입 실패", error.message);
@@ -49,7 +49,7 @@ export default function Signup() {
             <Text style={authStyles.title}>회원가입</Text>
 
             {/* 프로필 이미지 업로드 추가*/}
-            <TextInput style={authStyles.input} placeholder="이름" value={username} onChangeText={setUsername} />
+            <TextInput style={authStyles.input} placeholder="이름" value={userName} onChangeText={setUserName} />
             <TextInput
                 style={authStyles.input}
                 placeholder="이메일"
