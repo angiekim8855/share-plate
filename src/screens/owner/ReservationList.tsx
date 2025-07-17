@@ -6,17 +6,16 @@ import { increaseItemStock, updateOrderStatus } from "../../services/reservation
 import { Reservation, ReservationItem, ReservationStatus } from "../../types/reservation";
 import StatusBadge from "../../components/StatusBadge";
 import StoreModal from "../../components/StoreModal";
+import { useUser } from "../../context/UserContext";
 
 export default function ReservationList() {
-    const [isStoreNotResistered, setIsStoreNotResistered] = useState<boolean>(false);
+    const { user } = useUser();
+
+    const [isStoreNotResistered, setIsStoreNotResistered] = useState<boolean>(user.storeId === "");
     const [reservations, setReservations] = useState<Reservation[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // 데이터 가져와야함
-    const storeId = "4a550e11-e86c-43fa-91a6-02fd5a480331";
-    const userId = "12345";
-
-    const fetchReservations = async () => {
+    const fetchReservations = async (storeId: string) => {
         setLoading(true);
         const data = await fetchStoreReservations(storeId);
         setReservations(data as Reservation[]);
@@ -24,8 +23,13 @@ export default function ReservationList() {
     };
 
     useEffect(() => {
-        fetchReservations();
-    }, [storeId]);
+        if (user?.storeId) {
+            fetchReservations(user.storeId); // storeId 바뀌면 다시 호출됨
+        } else {
+            setReservations([]);
+            setLoading(false);
+        }
+    }, [user?.storeId]);
 
     if (loading) {
         return <LoadingIndicator />;
@@ -43,14 +47,14 @@ export default function ReservationList() {
             {
                 text: "확인",
                 onPress: async () => {
-                    await updateOrderStatus(userId, storeId, reservationId, newStatus);
+                    await updateOrderStatus(userId, user.storeId, reservationId, newStatus);
 
                     // ✅ 예약 취소 시 재고 복구 todo: 캔슬 때만 itemLsit 넘겨주는데, 없을때 에러 처리
                     if (newStatus === "Canceled" && itemList) {
-                        await Promise.all(itemList.map((item) => increaseItemStock(storeId, item.itemId, item.stock)));
+                        await Promise.all(itemList.map((item) => increaseItemStock(user.storeId, item.itemId, item.stock)));
                     }
 
-                    fetchReservations();
+                    fetchReservations(user.storeId);
                 },
             },
         ]);
@@ -141,7 +145,7 @@ export default function ReservationList() {
                 onClose={() => setIsStoreNotResistered(false)}
                 mode="add"
                 initialData={null}
-                ownerId={userId}
+                ownerId={user.userId}
             />
         </ScrollView>
     );

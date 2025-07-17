@@ -5,6 +5,7 @@ import ImageUploader from "./ImageUploader";
 import LoadingIndicator from "./LoadingIndicator";
 import { User } from "../types/user";
 import { updateUserProfile } from "../services/user";
+import { Timestamp } from "firebase/firestore";
 
 export default function ProfileEditModal({ isVisible, onClose, initialData }: any) {
     const [uploading, setUploading] = useState(false);
@@ -34,10 +35,11 @@ export default function ProfileEditModal({ isVisible, onClose, initialData }: an
                 storeIdList: initialData.storeIdList,
                 email: initialData.email,
                 favoriteStore: initialData.favoriteStore,
-                createAt: initialData.createAt,
+                createAt: new Timestamp(initialData.createdAt.seconds, initialData.createdAt.nanoseconds),
                 profileImage,
                 userName,
                 phone,
+                storeId: initialData.storeId,
             };
 
             await updateUserProfile(updatedData);
@@ -57,7 +59,6 @@ export default function ProfileEditModal({ isVisible, onClose, initialData }: an
             console.error(error);
         }
     };
-
     return (
         <Modal isVisible={isVisible} onBackdropPress={onClose} style={styles.modal}>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.sheet}>

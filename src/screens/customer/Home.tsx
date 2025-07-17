@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../navigation/types";
-import { FallbackImage } from "../components/FallbackImage";
+import { RootStackParamList } from "../../navigation/types";
+import { FallbackImage } from "../../components/FallbackImage";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../firebase";
-import { Store } from "../types/store";
-import LoadingIndicator from "../components/LoadingIndicator";
+import { db } from "../../../firebase";
+import { Store } from "../../types/store";
+import LoadingIndicator from "../../components/LoadingIndicator";
+import { categoryColors, StoreCategory } from "../../constant";
 
 type Navigation = StackNavigationProp<RootStackParamList, "HomeMain">;
 
@@ -57,10 +58,15 @@ export default function Home() {
             keyExtractor={(item) => item.storeId}
             renderItem={({ item }) => (
                 <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("RestaurantDetail", { store: item })}>
-                    <FallbackImage uri={item.thumbnailImg} style={styles.thumbnail} defaultImg={require("../../assets/defaultImg.jpeg")} />
+                    <FallbackImage uri={item.thumbnailImg} style={styles.thumbnail} defaultImg={require("../../../assets/defaultImg.jpeg")} />
                     <View>
                         <Text style={styles.name}>{item.storeName}</Text>
                         <Text>{item.address}</Text>
+                    </View>
+
+                    {/* 카테고리 뱃지 */}
+                    <View style={[styles.badge, { backgroundColor: categoryColors[item.category] || "#999" }]}>
+                        <Text style={styles.badgeText}>{StoreCategory[item.category]}</Text>
                     </View>
                 </TouchableOpacity>
             )}
@@ -75,6 +81,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderColor: "#ddd",
         alignItems: "center",
+        position: "relative", // 뱃지 절대 위치를 위한 설정
     },
     thumbnail: {
         width: 80,
@@ -84,6 +91,22 @@ const styles = StyleSheet.create({
     },
     name: {
         fontSize: 18,
+        fontWeight: "bold",
+    },
+    infoContainer: {
+        flex: 1,
+    },
+    badge: {
+        position: "absolute",
+        top: 10,
+        right: 12,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 12,
+    },
+    badgeText: {
+        color: "#fff",
+        fontSize: 13,
         fontWeight: "bold",
     },
 });
