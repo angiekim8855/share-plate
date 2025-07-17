@@ -8,6 +8,9 @@ export const createStore = async (storeData: Store) => {
         const docRef = doc(db, "store", storeData.storeId); // storeId를 문서 ID로 지정
         await setDoc(docRef, storeData);
 
+        const userDocRef = doc(db, "user", storeData.ownerId);
+        await updateDoc(userDocRef, { storeId: docRef.id });
+
         return docRef.id;
     } catch (error) {
         console.log(error);
