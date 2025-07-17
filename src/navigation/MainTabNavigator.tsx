@@ -1,10 +1,10 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Reservation } from "../screens/Reservation";
+import { Reservation } from "../screens/customer/Reservation";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import RestaurantDetail from "../screens/RestaurantDetail";
-import Home from "../screens/Home";
-import UserMyPage from "../screens/UserMyPage";
+import RestaurantDetail from "../screens/customer/RestaurantDetail";
+import Home from "../screens/customer/Home";
+import UserMyPage from "../screens/customer/UserMyPage";
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
