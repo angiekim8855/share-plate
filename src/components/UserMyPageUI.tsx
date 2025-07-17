@@ -11,18 +11,18 @@ export default function UserMyPageUI({ user, favorites, onEditProfile, onLogout 
     const [stores, setStores] = useState<Store[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const loadFavoriteStores = async () => {
-            try {
-                const fetchedStores = await fetchFavoriteStores(favorites);
-                setStores(fetchedStores);
-            } catch (error) {
-                console.error("즐겨찾기 가게 로딩 실패:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const loadFavoriteStores = async () => {
+        try {
+            const fetchedStores = await fetchFavoriteStores(favorites);
+            setStores(fetchedStores);
+        } catch (error) {
+            console.error("즐겨찾기 가게 로딩 실패:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         if (favorites.length > 0) {
             loadFavoriteStores();
         } else {
@@ -56,7 +56,7 @@ export default function UserMyPageUI({ user, favorites, onEditProfile, onLogout 
         <SafeAreaView style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <FallbackImage uri={user.profileImg} style={styles.profileImage} defaultImg={require("../../assets/profile-default.png")} />
+                <FallbackImage uri={user.profileImage} style={styles.profileImage} defaultImg={require("../../assets/profile-default.png")} />
                 <Text style={styles.userName}>{user.userName}</Text>
                 <Text style={styles.userEmail}>{user.email}</Text>
             </View>
@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         color: "#a1a1aa",
         marginTop: 32,
+        marginBottom: 32,
     },
     buttonContainer: {
         flexDirection: "row",

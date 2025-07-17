@@ -8,16 +8,17 @@ import { Alert } from "react-native";
 import MenuModal from "../../components/MenuModal";
 import { addItemToStore, fetchItemsFromStore, updateItemInStore } from "../../services/owner";
 import LoadingIndicator from "../../components/LoadingIndicator";
+import { useUser } from "../../context/UserContext";
 
 export default function ItemManage() {
+    const { user } = useUser();
+    const storeId = user.storeId;
+
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [modalMode, setModalMode] = useState<"add" | "edit">("add");
     const [selectedItem, setSelectedItem] = useState<Item | null>(null);
     const [itemList, setItemList] = useState<Item[]>([]);
     const [loading, setLoading] = useState(false);
-
-    // 데이터 가져와야함
-    const storeId = "4a550e11-e86c-43fa-91a6-02fd5a480331";
 
     const handleAddMenu = () => {
         setModalMode("add");
