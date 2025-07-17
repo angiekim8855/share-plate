@@ -4,36 +4,26 @@ import { fetchStoreData } from "../../services/owner";
 import { Store } from "../../types/store";
 import { FallbackImage } from "../../components/FallbackImage";
 import StoreModal from "../../components/StoreModal";
+import { logout } from "../../services/auth";
+import { useUser } from "../../context/UserContext";
+import { StoreCategory } from "../../constant";
 
 export default function OwnerMyPage() {
-    const storeId = "4a550e11-e86c-43fa-91a6-02fd5a480331";
+    const { user } = useUser();
     const [store, setStore] = useState<Store>();
-    const [reservations, setReservations] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
-
     useEffect(() => {
         loadStoreData();
     }, []);
 
     const loadStoreData = async () => {
-        const storeData = await fetchStoreData(storeId);
-        // const reservationData = await fetchStoreReservations(storeId);
+        const storeData = await fetchStoreData(user.storeId);
         setStore(storeData as Store);
-        // setReservations(reservationData);
     };
 
     const handleLogout = async () => {
-        console.log("to do: 로그아웃!");
-        // await auth.signOut();
+        await logout();
     };
-
-    // const completedReservations = reservations.filter((r) => r.orderStatus === "completed");
-
-    // const totalSales = completedReservations.reduce((sum, r) => sum + r.totalPrice, 0);
-    // const totalOrders = completedReservations.length;
-    // const totalItems = completedReservations.reduce((sum, r) => {
-    //     return sum + r.itemList.reduce((itemSum, item) => itemSum + item.quantity, 0);
-    // }, 0);
 
     return (
         <>
@@ -52,7 +42,7 @@ export default function OwnerMyPage() {
 
                             <View style={styles.infoCard}>
                                 <Text style={styles.label}>카테고리</Text>
-                                <Text style={styles.value}>{store.category}</Text>
+                                <Text style={styles.value}>{StoreCategory[store.category as keyof typeof StoreCategory]}</Text>
                             </View>
 
                             <View style={styles.infoCard}>
@@ -108,7 +98,15 @@ export default function OwnerMyPage() {
                     <Text style={styles.buttonText}>로그아웃</Text>
                 </TouchableOpacity>
             </ScrollView>
-            <StoreModal isVisible={modalVisible} onClose={() => setModalVisible(false)} mode="edit" initialData={store} />
+            <StoreModal
+                isVisible={modalVisible}
+                onClose={() => {
+                    loadStoreData();
+                    setModalVisible(false);
+                }}
+                mode="edit"
+                initialData={store}
+            />
         </>
     );
 }
