@@ -8,13 +8,14 @@ import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { createStore, updateStore } from "../services/owner";
 import ImageUploader from "./ImageUploader";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../../firebase";
 import LoadingIndicator from "./LoadingIndicator";
+import { fetchUserData } from "../services/user";
+import { useUser } from "../context/UserContext";
 
 export default function StoreModal({ isVisible, onClose, mode, initialData = {}, ownerId }: any) {
+    const { setUser } = useUser();
     const [uploading, setLoading] = useState(false);
-    const [imageUri, setImageUri] = useState("");
+    const [thumbnailImg, setThumbnailImg] = useState("");
     const [storeName, setStoreName] = useState("");
     const [address, setAddress] = useState("");
     const [phone, setPhone] = useState("");
@@ -26,7 +27,7 @@ export default function StoreModal({ isVisible, onClose, mode, initialData = {},
 
     // 모달 열릴 때마다 초기값 세팅
     useEffect(() => {
-        setImageUri(initialData?.thumbnailImg || "");
+        setThumbnailImg(initialData?.thumbnailImg || "");
         setStoreName(initialData?.storeName || "");
         setCategory(initialData?.category || "");
         setAddress(initialData?.address || "");
@@ -36,26 +37,6 @@ export default function StoreModal({ isVisible, onClose, mode, initialData = {},
         setClosingTime(initialData?.closingTime ? new Date(initialData.closingTime) : new Date());
     }, [isVisible]);
 
-    const uploadImage = async (uri: string) => {
-        try {
-            if (!uri || uri.startsWith("http")) return uri; // 기존 이미지 유지
-
-            const response = await fetch(uri);
-            const blob = await response.blob();
-
-            const imageId = `${Date.now().toString(36)}-${Math.random().toString(36).substr(2, 5)}`;
-            const imageRef = ref(storage, `menuImages/${imageId}`);
-
-            await uploadBytes(imageRef, blob);
-            const downloadURL = await getDownloadURL(imageRef);
-
-            return downloadURL;
-        } catch (error) {
-            console.error("이미지 업로드 에러:", error);
-            return null;
-        }
-    };
-
     const handleChange = (event: DateTimePickerEvent, selectedTime?: Date) => {
         setShowTimePicker(Platform.OS === "ios"); // iOS는 항상 띄우고 Android는 닫기
         if (selectedTime) {
@@ -64,25 +45,18 @@ export default function StoreModal({ isVisible, onClose, mode, initialData = {},
     };
 
     const handleSubmit = async () => {
-        if (!imageUri || !storeName || !address || !phone || !businessNumber || !category || !bankAccount) {
+        if (!thumbnailImg || !storeName || !address || !phone || !businessNumber || !category || !bankAccount) {
             Alert.alert("모든 항목을 입력해주세요.");
             return;
         }
         setLoading(true);
 
         try {
-            const imageUrl = await uploadImage(imageUri);
-            if (!imageUrl) {
-                Alert.alert("이미지 업로드 실패", "다시 시도해주세요.");
-                setLoading(false);
-                return;
-            }
-
             const newStoreData = {
                 storeId: initialData?.storeId || uuidv4(),
                 storeName,
                 category,
-                thumbnailImg: imageUrl,
+                thumbnailImg,
                 address,
                 phone,
                 businessNumber,
@@ -107,7 +81,9 @@ export default function StoreModal({ isVisible, onClose, mode, initialData = {},
                 Alert.alert("등록 완료", "가게 정보가 성공적으로 등록되었습니다.", [
                     {
                         text: "확인",
-                        onPress: () => {
+                        onPress: async () => {
+                            const updatedUser = await fetchUserData(ownerId);
+                            setUser(updatedUser.data());
                             setLoading(false);
                             onClose();
                         },
@@ -151,7 +127,7 @@ export default function StoreModal({ isVisible, onClose, mode, initialData = {},
                     </Picker>
 
                     <Text style={styles.label}>가게 이미지</Text>
-                    <ImageUploader onImageSelected={setImageUri} initialImage={imageUri} />
+                    <ImageUploader onImageSelected={setThumbnailImg} initialImage={thumbnailImg} label="이미지 선택" />
 
                     <Text style={styles.label}>주소</Text>
                     <TextInput
@@ -258,7 +234,7 @@ const styles = StyleSheet.create({
         borderColor: "#ccc",
         borderRadius: 8,
         padding: 12,
-        marginBottom: 24, // 👉 input 간 간격 넉넉히
+        marginBottom: 24,
     },
     placeholder: {
         color: "#a1a1aa",
