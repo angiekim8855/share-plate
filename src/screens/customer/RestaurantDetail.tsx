@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert } from "react-native";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import { RootStackParamList } from "../navigation/types";
-import ReservationBottomSheet from "../components/ReservationBottomSheet";
-import { createReservation, decreaseItemStock } from "../services/reservation";
+import { RootStackParamList } from "../../navigation/types";
+import ReservationBottomSheet from "../../components/ReservationBottomSheet";
+import { createReservation, decreaseItemStock } from "../../services/reservation";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { FallbackImage } from "../components/FallbackImage";
-import { rawReservation, ReservationItem } from "../types/reservation";
-import { generateOrderNumber } from "../utils/util";
-import { fetchItemsFromStore } from "../services/owner";
-import { Item } from "../types/item";
-import { Review } from "../types/review";
+import { FallbackImage } from "../../components/FallbackImage";
+import { rawReservation, ReservationItem } from "../../types/reservation";
+import { generateOrderNumber } from "../../utils/util";
+import { fetchItemsFromStore } from "../../services/owner";
+import { Item } from "../../types/item";
+import { Review } from "../../types/review";
 
 type RestaurantDetailRouteProp = RouteProp<RootStackParamList, "RestaurantDetail">;
 type Navigation = StackNavigationProp<RootStackParamList, "RestaurantDetail">;
@@ -84,7 +84,7 @@ export default function RestaurantDetail() {
                 {itemList.length > 0 ? (
                     itemList.map((item) => (
                         <View key={item.itemId} style={styles.menuItem}>
-                            <FallbackImage uri={item.thumbnailImg} style={styles.image} defaultImg={require("../../assets/default-food.jpeg")} />
+                            <FallbackImage uri={item.thumbnailImg} style={styles.image} defaultImg={require("../../../assets/default-food.jpeg")} />
                             <View style={styles.menuText}>
                                 <Text>{item.itemName || "메뉴 이름 없음"}</Text>
                                 <View style={styles.priceContainer}>
