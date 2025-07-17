@@ -1,4 +1,4 @@
-import { collection, doc, getDocs, orderBy, query, updateDoc, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, orderBy, query, updateDoc, where } from "firebase/firestore";
 import { db } from "../../firebase";
 import { Store } from "../types/store";
 import { User } from "../types/user";
@@ -55,5 +55,20 @@ export const fetchFavoriteStores = async (storeIds: string[]): Promise<Store[]> 
     } catch (error) {
         console.error("즐겨찾기 가게 가져오기 실패:", error);
         return [];
+    }
+};
+
+// Firestore에서 유저 데이터 가져오기
+export const fetchUserData = async (uid: string) => {
+    try {
+        const userDoc = await getDoc(doc(db, "user", uid));
+
+        if (!userDoc.exists()) {
+            throw new Error("유저 정보가 존재하지 않습니다.");
+        }
+        return userDoc;
+    } catch (error: any) {
+        console.log("유저 데이터 가져오기 실패: ", error.message);
+        throw error;
     }
 };
