@@ -98,7 +98,7 @@ export default function StoreModal({ isVisible, onClose, mode, initialData = {},
     };
 
     return (
-        <Modal isVisible={isVisible} onBackdropPress={onClose} style={styles.modal}>
+        <Modal isVisible={isVisible} onBackdropPress={mode === 'add' ? undefined : onClose} style={styles.modal}>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.sheet}>
                 <Text style={styles.title}>{mode === "edit" ? "가게 수정" : "가게 등록"}</Text>
                 <ScrollView style={styles.scrollView}>
