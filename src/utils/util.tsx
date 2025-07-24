@@ -14,8 +14,10 @@ export const randomId = () => Math.random().toString(36).substr(2, 9);
 
 export const checkImageExists = async (url: string) => {
     try {
-        // 스토리지 경로 추출
-        const imagePath = decodeURIComponent(new URL(url).pathname.replace("/o/", "").split("?")[0]);
+        // Robustly extract the storage path from the Firebase Storage URL
+        const match = url.match(/\/o\/(.*?)\?/);
+        const imagePath = match ? decodeURIComponent(match[1]) : "";
+        if (!imagePath) throw new Error("Invalid Firebase Storage URL format");
 
         const imageRef = ref(storage, imagePath);
         await getDownloadURL(imageRef);
