@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, Image, StyleSheet, Alert, Text, TouchableOpacity } from "react-native";
+import { View, Image, StyleSheet, Alert, Text, TouchableOpacity, Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import * as MediaLibrary from "expo-media-library";
 import { checkImageExists } from "../utils/util";
 
 interface ImageUploaderProps {
@@ -9,7 +10,7 @@ interface ImageUploaderProps {
     label?: string;
 }
 
-export default function ImageUploader({ onImageSelected, initialImage = "", label = "이미지 선택" }: ImageUploaderProps) {
+export default function ImageUploader({ onImageSelected, initialImage, label = "이미지 선택" }: ImageUploaderProps) {
     const [selectedImage, setSelectedImage] = useState(initialImage || "");
     const [imageExists, setImageExists] = useState(true);
 
@@ -50,7 +51,18 @@ export default function ImageUploader({ onImageSelected, initialImage = "", labe
         });
 
         if (!result.canceled) {
-            const uri = result.assets[0].uri;
+            let uri = result.assets[0].uri;
+            // Normalize iOS ph:// URI to file path
+            if (Platform.OS === "ios" && uri.startsWith("ph://")) {
+                try {
+                    const assetInfo = await MediaLibrary.getAssetInfoAsync(result.assets[0].assetId || uri);
+                    if (assetInfo && assetInfo.localUri) {
+                        uri = assetInfo.localUri;
+                    }
+                } catch (e) {
+                    console.warn("Failed to get localUri for iOS asset:", e);
+                }
+            }
             setSelectedImage(uri);
             setImageExists(true);
             onImageSelected(uri); // 부모 컴포넌트에 선택한 로컬 이미지 URI 전달
