@@ -18,7 +18,7 @@
                 "backgroundColor": "#ffffff"
             },
             "edgeToEdgeEnabled": true,
-            "package": "com.ameunji.shareplate"
+            "package": "com.shareplate.shareplate"
         },
         "web": {
             "favicon": "./assets/logo.png"
