@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert } from "react-native";
 import { useState, useEffect } from "react";
 import { fetchStoreData } from "../../services/owner";
 import { Store } from "../../types/store";
@@ -22,7 +22,10 @@ export default function OwnerMyPage() {
     };
 
     const handleLogout = async () => {
-        await logout();
+        Alert.alert("로그아웃", "정말 로그아웃 하시겠습니까?", [
+            { text: "취소", style: "cancel" },
+            { text: "로그아웃", onPress: async () => await logout() },
+        ]);
     };
 
     return (
