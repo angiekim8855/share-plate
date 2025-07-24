@@ -7,13 +7,15 @@ import StatusBadge from "../../components/StatusBadge";
 import { ORDER_STATUS_COLORS } from "../../styles/statusStyles";
 import { deleteReservation, increaseItemStock } from "../../services/reservation";
 import { useFocusEffect } from "@react-navigation/native";
+import { useUser } from "../../context/UserContext";
 
 export function Reservation() {
+    const { user } = useUser();
+
     const [loading, setLoading] = useState(true);
     const [reservationList, setReservationList] = useState<ReservationType[]>([]);
 
-    // 데이터 가져와야함
-    const userId = "1253464264";
+    const userId = user.userId;
 
     const fetchReservations = async () => {
         setLoading(true);
