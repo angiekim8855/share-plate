@@ -11,6 +11,7 @@ import ImageUploader from "./ImageUploader";
 import LoadingIndicator from "./LoadingIndicator";
 import { fetchUserData } from "../services/user";
 import { useUser } from "../context/UserContext";
+import { uploadImage } from "../utils/util";
 
 export default function StoreModal({ isVisible, onClose, mode, initialData = {}, ownerId }: any) {
     const { setUser } = useUser();
@@ -52,11 +53,13 @@ export default function StoreModal({ isVisible, onClose, mode, initialData = {},
         setLoading(true);
 
         try {
+            // 1. 이미지 업로드
+            const imageUrl = await uploadImage(thumbnailImg, "storeImages");
             const newStoreData = {
                 storeId: initialData?.storeId || uuidv4(),
                 storeName,
                 category,
-                thumbnailImg,
+                thumbnailImg: imageUrl, // 저장할 때는 downloadURL 사용
                 address,
                 phone,
                 businessNumber,
@@ -98,7 +101,7 @@ export default function StoreModal({ isVisible, onClose, mode, initialData = {},
     };
 
     return (
-        <Modal isVisible={isVisible} onBackdropPress={mode === 'add' ? undefined : onClose} style={styles.modal}>
+        <Modal isVisible={isVisible} onBackdropPress={mode === "add" ? undefined : onClose} style={styles.modal}>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.sheet}>
                 <Text style={styles.title}>{mode === "edit" ? "가게 수정" : "가게 등록"}</Text>
                 <ScrollView style={styles.scrollView}>

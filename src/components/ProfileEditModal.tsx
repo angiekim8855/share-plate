@@ -6,6 +6,7 @@ import LoadingIndicator from "./LoadingIndicator";
 import { User } from "../types/user";
 import { updateUserProfile } from "../services/user";
 import { Timestamp } from "firebase/firestore";
+import { uploadImage } from "../utils/util";
 
 export default function ProfileEditModal({ isVisible, onClose, initialData }: any) {
     const [uploading, setUploading] = useState(false);
@@ -29,6 +30,8 @@ export default function ProfileEditModal({ isVisible, onClose, initialData }: an
         setUploading(true);
 
         try {
+            const imageUrl = await uploadImage(profileImage, "profileImages");
+
             const updatedData: User = {
                 userId: initialData.userId,
                 userType: initialData.userType,
@@ -36,7 +39,7 @@ export default function ProfileEditModal({ isVisible, onClose, initialData }: an
                 email: initialData.email,
                 favoriteStore: initialData.favoriteStore,
                 createAt: new Timestamp(initialData.createdAt.seconds, initialData.createdAt.nanoseconds),
-                profileImage,
+                profileImage: imageUrl ?? "",
                 userName,
                 phone,
                 storeId: initialData.storeId,
