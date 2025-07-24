@@ -21,7 +21,7 @@ export const FallbackImage: React.FC<FallbackImageProps> = ({ uri, style, defaul
             return <Image source={defaultImg} style={style} resizeMode={resizeMode} onError={() => setError(true)} />;
         }
 
-        if ((fallbackText = "이미지 없음")) {
+        if (fallbackText === "이미지 없음") {
             return (
                 <View style={[style, { justifyContent: "center", alignItems: "center" }]}>
                     <Text style={{ fontSize: 16, color: "#999" }}>{fallbackText}</Text>
