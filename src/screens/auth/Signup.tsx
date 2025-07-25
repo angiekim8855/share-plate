@@ -63,19 +63,34 @@ export default function Signup() {
                 <Text style={authStyles.title}>회원가입</Text>
 
                 {/* 프로필 이미지 업로드 추가*/}
-                <TextInput style={authStyles.input} placeholder="이름" value={userName} onChangeText={setUserName} />
+                <TextInput
+                    style={authStyles.input}
+                    placeholder="이름"
+                    placeholderTextColor="rgba(0, 0, 0, 0.54)"
+                    value={userName}
+                    onChangeText={setUserName}
+                />
                 <TextInput
                     style={authStyles.input}
                     placeholder="이메일"
+                    placeholderTextColor="rgba(0, 0, 0, 0.54)"
                     value={email}
                     onChangeText={setEmail}
                     keyboardType="email-address"
                     autoCapitalize="none"
                 />
-                <TextInput style={authStyles.input} placeholder="비밀번호" value={password} onChangeText={setPassword} secureTextEntry />
+                <TextInput
+                    style={authStyles.input}
+                    placeholder="비밀번호"
+                    placeholderTextColor="rgba(0, 0, 0, 0.54)"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                />
                 <TextInput
                     style={authStyles.input}
                     placeholder="전화번호 (예: 010-1234-5678)"
+                    placeholderTextColor="rgba(0, 0, 0, 0.54)"
                     value={phone}
                     onChangeText={setPhone}
                     keyboardType="phone-pad"
