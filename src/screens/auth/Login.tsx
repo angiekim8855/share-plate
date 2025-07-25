@@ -33,12 +33,20 @@ export default function Login() {
                 <TextInput
                     style={authStyles.input}
                     placeholder="이메일"
+                    placeholderTextColor="rgba(0, 0, 0, 0.54)"
                     keyboardType="email-address"
                     value={email}
                     autoCapitalize="none"
                     onChangeText={setEmail}
                 />
-                <TextInput style={authStyles.input} placeholder="비밀번호" secureTextEntry value={password} onChangeText={setPassword} />
+                <TextInput
+                    style={authStyles.input}
+                    placeholder="비밀번호"
+                    placeholderTextColor="rgba(0, 0, 0, 0.54)"
+                    secureTextEntry
+                    value={password}
+                    onChangeText={setPassword}
+                />
 
                 <TouchableOpacity style={authStyles.button} onPress={handleSignIn}>
                     <Text style={authStyles.buttonText}>로그인</Text>
