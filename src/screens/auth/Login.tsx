@@ -6,6 +6,7 @@ import { RootStackParamList } from "../../navigation/types";
 import { authStyles } from "../../styles/authStyles";
 import { login } from "../../services/auth";
 import { useUser } from "../../context/UserContext";
+import { MaterialIcons } from "@expo/vector-icons";
 
 type Navigation = StackNavigationProp<RootStackParamList, "HomeMain">;
 
@@ -13,6 +14,8 @@ export default function Login() {
     const navigation = useNavigation<Navigation>();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isSecure, setIsSecure] = useState(true);
+
     const { user, setUser } = useUser();
 
     const handleSignIn = async () => {
@@ -29,7 +32,6 @@ export default function Login() {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={authStyles.container}>
                 <Text style={authStyles.title}>로그인</Text>
-
                 <TextInput
                     style={authStyles.input}
                     placeholder="이메일"
@@ -39,19 +41,22 @@ export default function Login() {
                     autoCapitalize="none"
                     onChangeText={setEmail}
                 />
-                <TextInput
-                    style={[authStyles.input, { color: "black" }]}
-                    placeholder="비밀번호"
-                    placeholderTextColor="rgba(0, 0, 0, 0.54)"
-                    secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
-                />
-
+                <View style={{ position: "relative" }}>
+                    <TextInput
+                        style={[authStyles.input, { paddingRight: 40, color: "black" }]}
+                        placeholder="비밀번호"
+                        placeholderTextColor="rgba(0, 0, 0, 0.54)"
+                        secureTextEntry={isSecure}
+                        value={password}
+                        onChangeText={setPassword}
+                    />
+                    <TouchableOpacity style={authStyles.PwIconButton} onPress={() => setIsSecure((prev) => !prev)} activeOpacity={0.7}>
+                        <MaterialIcons name={isSecure ? "visibility-off" : "visibility"} size={20} color="rgba(0, 0, 0, 0.54)" />
+                    </TouchableOpacity>
+                </View>
                 <TouchableOpacity style={authStyles.button} onPress={handleSignIn}>
                     <Text style={authStyles.buttonText}>로그인</Text>
                 </TouchableOpacity>
-
                 <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
                     <Text style={authStyles.link}>처음이신가요? 회원가입으로 시작하세요!</Text>
                 </TouchableOpacity>

@@ -11,6 +11,7 @@ import { signUp } from "../../services/auth";
 import { signOut } from "firebase/auth";
 import { auth } from "../../../firebase";
 import LoadingIndicator from "../../components/LoadingIndicator";
+import { MaterialIcons } from "@expo/vector-icons";
 
 type Navigation = StackNavigationProp<RootStackParamList>;
 
@@ -19,6 +20,7 @@ export default function Signup() {
     const [phone, setPhone] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isSecure, setIsSecure] = useState(true);
     const [userName, setUserName] = useState("");
     const [userType, setUserType] = useState<"owner" | "customer">("customer");
     const [loading, setLoading] = useState(false);
@@ -79,14 +81,19 @@ export default function Signup() {
                     keyboardType="email-address"
                     autoCapitalize="none"
                 />
-                <TextInput
-                    style={[authStyles.input, { color: "black" }]}
-                    placeholder="비밀번호"
-                    placeholderTextColor="rgba(0, 0, 0, 0.54)"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                />
+                <View style={{ position: "relative" }}>
+                    <TextInput
+                        style={[authStyles.input, { paddingRight: 40, color: "black" }]}
+                        placeholder="비밀번호"
+                        placeholderTextColor="rgba(0, 0, 0, 0.54)"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry={isSecure}
+                    />
+                    <TouchableOpacity style={authStyles.PwIconButton} onPress={() => setIsSecure((prev) => !prev)} activeOpacity={0.7}>
+                        <MaterialIcons name={isSecure ? "visibility-off" : "visibility"} size={20} color="rgba(0, 0, 0, 0.54)" />
+                    </TouchableOpacity>
+                </View>
                 <TextInput
                     style={authStyles.input}
                     placeholder="전화번호 (예: 010-1234-5678)"
