@@ -80,7 +80,7 @@ export default function Signup() {
                     autoCapitalize="none"
                 />
                 <TextInput
-                    style={authStyles.input}
+                    style={[authStyles.input, { color: "black" }]}
                     placeholder="비밀번호"
                     placeholderTextColor="rgba(0, 0, 0, 0.54)"
                     value={password}
@@ -99,8 +99,8 @@ export default function Signup() {
                 <View style={authStyles.pickerContainer}>
                     <Text style={authStyles.pickerLabel}>유저 타입 선택</Text>
                     <Picker selectedValue={userType} onValueChange={(value) => setUserType(value)} dropdownIconColor="#555">
-                        <Picker.Item label="일반 손님" value="customer" />
-                        <Picker.Item label="사장님" value="owner" />
+                        <Picker.Item label="일반 손님" value="customer" color="black" />
+                        <Picker.Item label="사장님" value="owner" color="black" />
                     </Picker>
                 </View>
 
