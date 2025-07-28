@@ -104,7 +104,7 @@ export default function StoreModal({ isVisible, onClose, mode, initialData = {},
         <Modal isVisible={isVisible} onBackdropPress={mode === "add" ? undefined : onClose} style={styles.modal}>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.sheet}>
                 <Text style={styles.title}>{mode === "edit" ? "가게 수정" : "가게 등록"}</Text>
-                <ScrollView style={styles.scrollView}>
+                <ScrollView style={styles.scrollView} contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}>
                     <Text style={styles.label}>가게이름</Text>
                     <TextInput
                         style={styles.input}
@@ -181,7 +181,7 @@ export default function StoreModal({ isVisible, onClose, mode, initialData = {},
                             value={closingTime}
                             mode="time"
                             is24Hour={true}
-                            display={Platform.OS === "ios" ? "spinner" : "default"} // iOS: spinner, Android: 기본
+                            display="spinner"
                             onChange={handleChange}
                             minuteInterval={10}
                         />
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
         color: "#a1a1aa",
     },
     footer: {
-        padding: 16,
+        padding: 10,
         borderTopWidth: 1,
         borderTopColor: "#eee",
     },
