@@ -40,7 +40,7 @@ export default function Login() {
                     onChangeText={setEmail}
                 />
                 <TextInput
-                    style={authStyles.input}
+                    style={[authStyles.input, { color: "black" }]}
                     placeholder="비밀번호"
                     placeholderTextColor="rgba(0, 0, 0, 0.54)"
                     secureTextEntry
