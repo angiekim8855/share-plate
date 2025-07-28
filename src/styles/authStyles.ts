@@ -51,4 +51,12 @@ export const authStyles = StyleSheet.create({
         color: "#333",
         marginTop: 10,
     },
+    PwIconButton: {
+        position: "absolute",
+        right: 12,
+        top: "50%",
+        transform: [{ translateY: -25 }],
+        padding: 5,
+        zIndex: 1,
+    },
 });
