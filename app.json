@@ -1,32 +1,40 @@
 {
-    "expo": {
-        "name": "share-plate",
-        "slug": "share-plate",
-        "version": "1.0.0",
-        "orientation": "portrait",
-        "icon": "./assets/logo.png",
-        "userInterfaceStyle": "light",
-        "newArchEnabled": true,
-        "splash": {
-            "image": "./assets/logo.png",
-            "resizeMode": "contain",
-            "backgroundColor": "#ffffff"
-        },
-        "android": {
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/logo.png",
-                "backgroundColor": "#ffffff"
-            },
-            "edgeToEdgeEnabled": true,
-            "package": "com.shareplate.shareplate"
-        },
-        "web": {
-            "favicon": "./assets/logo.png"
-        },
-        "extra": {
-            "eas": {
-                "projectId": "a493bbdc-d8a1-43c6-b7d7-b8c66ea695c9"
-            }
-        }
-    }
+  "expo": {
+    "name": "share-plate",
+    "slug": "share-plate",
+    "owner": "ameunji",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.shareplate.shareplate"
+    },
+    "web": {
+      "favicon": "./assets/logo.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a493bbdc-d8a1-43c6-b7d7-b8c66ea695c9"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a493bbdc-d8a1-43c6-b7d7-b8c66ea695c9"
+    },
+    "ios": {}
+  }
 }
