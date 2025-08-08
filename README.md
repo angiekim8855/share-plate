@@ -123,7 +123,7 @@ src/
 
 -   📷 아래 QR 코드를 스캔하면 바로 실행됩니다!
 
-![QR 코드 이미지](./assets/expo-qr.png)
+<img src="./assets/expo-qr.png" width="50%" />
 
 > ※ iOS/Android 모두 지원됩니다. Expo Go 앱만 설치되어 있으면 테스트 가능해요!
 
