@@ -57,7 +57,7 @@
 -   가게 리스트 → 메뉴 상세 → 예약 → 예약 목록 확인
 
 🎞️ **시연 영상 (고객)**  
-<img src="./assets/user-flow.gif" width="50%" />
+<img src="./assets/user-flow.gif" width="70%" />
 
 ---
 
@@ -67,7 +67,7 @@
 -   메뉴 등록/수정
 
 🎞️ **시연 영상 (사장)**  
-<img src="./assets/owner-flow.gif" width="50%" />
+<img src="./assets/owner-flow.gif" width="70%" />
 
 <br />
 
@@ -75,7 +75,7 @@
 
 > 고객과 사장님의 앱 사용 흐름을 한눈에 볼 수 있어요.
 
-<img src="./assets/user-flow.png" width="50%" />
+<img src="./assets/user-flow.png" width="70%" />
 
 <br />
 
