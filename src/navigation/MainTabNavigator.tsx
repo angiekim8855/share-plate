@@ -1,29 +1,70 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Home from "../screens/Home";
-import { Reservation } from "../screens/Reservation";
-import MyPage from "../screens/MyPage";
+import { Reservation } from "../screens/customer/Reservation";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import RestaurantDetail from "../screens/RestaurantDetail";
+import RestaurantDetail from "../screens/customer/RestaurantDetail";
+import Home from "../screens/customer/Home";
+import UserMyPage from "../screens/customer/UserMyPage";
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
 
 function HomeStackNavigator() {
     return (
-        <HomeStack.Navigator>
-            <HomeStack.Screen name="HomeMain" component={Home} options={{ title: "홈" }} />
-            <HomeStack.Screen name="RestaurantDetail" component={RestaurantDetail} options={{ title: "가게 정보" }} />
+        <HomeStack.Navigator
+            screenOptions={{
+                headerTitleStyle: {
+                    fontSize: 16,
+                    fontWeight: "600",
+                },
+                headerTitleAlign: "center",
+            }}
+        >
+            <HomeStack.Screen
+                name="HomeMain"
+                component={Home}
+                options={{
+                    title: "홈",
+                }}
+            />
+            <HomeStack.Screen
+                name="RestaurantDetail"
+                component={RestaurantDetail}
+                options={{
+                    title: "가게 정보",
+                }}
+            />
         </HomeStack.Navigator>
     );
 }
 
 export default function MainTabNavigator() {
     return (
-        <Tab.Navigator>
-            <Tab.Screen name="Home" component={HomeStackNavigator} />
+        <Tab.Navigator
+            screenOptions={{
+                tabBarIcon: () => null,
+                tabBarIconStyle: { display: "none" },
+                tabBarLabelStyle: {
+                    fontSize: 16,
+                    fontWeight: "600",
+                    paddingTop: 10,
+                },
+                headerTitleAlign: "center",
+            }}
+        >
+            <Tab.Screen
+                name="Home"
+                component={HomeStackNavigator}
+                listeners={({ navigation }) => ({
+                    tabPress: () => {
+                        navigation.navigate("Home", {
+                            screen: "HomeMain",
+                        });
+                    },
+                })}
+            />
             <Tab.Screen name="Reservation" component={Reservation} />
-            <Tab.Screen name="MyPage" component={MyPage} />
+            <Tab.Screen name="MyPage" component={UserMyPage} />
         </Tab.Navigator>
     );
 }
