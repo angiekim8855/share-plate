@@ -1,12 +1,11 @@
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
-import { storage } from "../../firebase";
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View, StyleSheet } from "react-native";
 import Modal from "react-native-modal";
 import ImageUploader from "./ImageUploader";
 import LoadingIndicator from "./LoadingIndicator";
+import { uploadImage } from "../utils/util";
 
 export default function MenuModal({ isVisible, onClose, onSubmit, mode, initialData = {} }: any) {
     const [uploading, setUploading] = useState(false);
@@ -25,26 +24,6 @@ export default function MenuModal({ isVisible, onClose, onSubmit, mode, initialD
         setStock(initialData?.stock?.toString() || "");
     }, [initialData, isVisible]);
 
-    const uploadImage = async (uri: string) => {
-        try {
-            if (!uri || uri.startsWith("http")) return uri; // 기존 이미지 유지
-
-            const response = await fetch(uri);
-            const blob = await response.blob();
-
-            const imageId = `${Date.now().toString(36)}-${Math.random().toString(36).substr(2, 5)}`;
-            const imageRef = ref(storage, `menuImages/${imageId}`);
-
-            await uploadBytes(imageRef, blob);
-            const downloadURL = await getDownloadURL(imageRef);
-
-            return downloadURL;
-        } catch (error) {
-            console.error("이미지 업로드 에러:", error);
-            return null;
-        }
-    };
-
     const handleSubmit = async () => {
         if (!itemName || !originalPrice || !discountPrice || !stock) {
             Alert.alert("모든 항목을 입력해주세요.");
@@ -54,7 +33,8 @@ export default function MenuModal({ isVisible, onClose, onSubmit, mode, initialD
         setUploading(true);
 
         try {
-            const imageUrl = await uploadImage(imageUri);
+            const imageUrl = await uploadImage(imageUri, "menuImages");
+
             if (!imageUrl) {
                 Alert.alert("이미지 업로드 실패", "다시 시도해주세요.");
                 setUploading(false);

@@ -11,16 +11,47 @@ const HomeStack = createNativeStackNavigator();
 
 function HomeStackNavigator() {
     return (
-        <HomeStack.Navigator>
-            <HomeStack.Screen name="HomeMain" component={Home} options={{ title: "홈" }} />
-            <HomeStack.Screen name="RestaurantDetail" component={RestaurantDetail} options={{ title: "가게 정보" }} />
+        <HomeStack.Navigator
+            screenOptions={{
+                headerTitleStyle: {
+                    fontSize: 16,
+                    fontWeight: "600",
+                },
+                headerTitleAlign: "center",
+            }}
+        >
+            <HomeStack.Screen
+                name="HomeMain"
+                component={Home}
+                options={{
+                    title: "홈",
+                }}
+            />
+            <HomeStack.Screen
+                name="RestaurantDetail"
+                component={RestaurantDetail}
+                options={{
+                    title: "가게 정보",
+                }}
+            />
         </HomeStack.Navigator>
     );
 }
 
 export default function MainTabNavigator() {
     return (
-        <Tab.Navigator>
+        <Tab.Navigator
+            screenOptions={{
+                tabBarIcon: () => null,
+                tabBarIconStyle: { display: "none" },
+                tabBarLabelStyle: {
+                    fontSize: 16,
+                    fontWeight: "600",
+                    paddingTop: 10,
+                },
+                headerTitleAlign: "center",
+            }}
+        >
             <Tab.Screen
                 name="Home"
                 component={HomeStackNavigator}

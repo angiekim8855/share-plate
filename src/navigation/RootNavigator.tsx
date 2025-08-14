@@ -14,7 +14,6 @@ const Stack = createNativeStackNavigator();
 export default function RootNavigator() {
     const [user, setUser] = useState<any | null>(null);
     const [initializing, setInitializing] = useState(true);
-    console.log("user==========", user);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {

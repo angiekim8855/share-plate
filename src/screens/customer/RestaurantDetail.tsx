@@ -11,13 +11,14 @@ import { generateOrderNumber } from "../../utils/util";
 import { fetchItemsFromStore } from "../../services/owner";
 import { Item } from "../../types/item";
 import { Review } from "../../types/review";
+import { useUser } from "../../context/UserContext";
 
 type RestaurantDetailRouteProp = RouteProp<RootStackParamList, "RestaurantDetail">;
 type Navigation = StackNavigationProp<RootStackParamList, "RestaurantDetail">;
 
 export default function RestaurantDetail() {
-    const userId = "1253464264";
-    const userName = "앤지";
+    const { user } = useUser();
+
     const navigation = useNavigation<Navigation>();
 
     const route = useRoute<RestaurantDetailRouteProp>();
@@ -41,8 +42,8 @@ export default function RestaurantDetail() {
         try {
             const reservationData: rawReservation = {
                 orderNumber: generateOrderNumber(),
-                userId: userId,
-                userName: userName,
+                userId: user.userId,
+                userName: user.userName,
                 storeId: store.storeId,
                 storeName: store.storeName,
                 reservationDate: new Date().toISOString(),
@@ -50,7 +51,7 @@ export default function RestaurantDetail() {
                 totalPrice: totalPrice,
                 orderStatus: "Pending", // 초기 상태
             };
-            await createReservation(store.storeId, userId, reservationData);
+            await createReservation(store.storeId, user.userId, reservationData);
 
             // ✅ 예약 성공 시 메뉴 재고 감소
             await Promise.all(itemList.map((item) => decreaseItemStock(store.storeId, item.itemId, item.stock)));

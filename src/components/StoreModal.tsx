@@ -11,6 +11,7 @@ import ImageUploader from "./ImageUploader";
 import LoadingIndicator from "./LoadingIndicator";
 import { fetchUserData } from "../services/user";
 import { useUser } from "../context/UserContext";
+import { uploadImage } from "../utils/util";
 
 export default function StoreModal({ isVisible, onClose, mode, initialData = {}, ownerId }: any) {
     const { setUser } = useUser();
@@ -52,11 +53,13 @@ export default function StoreModal({ isVisible, onClose, mode, initialData = {},
         setLoading(true);
 
         try {
+            // 1. 이미지 업로드
+            const imageUrl = await uploadImage(thumbnailImg, "storeImages");
             const newStoreData = {
                 storeId: initialData?.storeId || uuidv4(),
                 storeName,
                 category,
-                thumbnailImg,
+                thumbnailImg: imageUrl, // 저장할 때는 downloadURL 사용
                 address,
                 phone,
                 businessNumber,
@@ -98,10 +101,10 @@ export default function StoreModal({ isVisible, onClose, mode, initialData = {},
     };
 
     return (
-        <Modal isVisible={isVisible} onBackdropPress={mode === 'add' ? undefined : onClose} style={styles.modal}>
+        <Modal isVisible={isVisible} onBackdropPress={mode === "add" ? undefined : onClose} style={styles.modal}>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.sheet}>
                 <Text style={styles.title}>{mode === "edit" ? "가게 수정" : "가게 등록"}</Text>
-                <ScrollView style={styles.scrollView}>
+                <ScrollView style={styles.scrollView} contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}>
                     <Text style={styles.label}>가게이름</Text>
                     <TextInput
                         style={styles.input}
@@ -178,7 +181,7 @@ export default function StoreModal({ isVisible, onClose, mode, initialData = {},
                             value={closingTime}
                             mode="time"
                             is24Hour={true}
-                            display={Platform.OS === "ios" ? "spinner" : "default"} // iOS: spinner, Android: 기본
+                            display="spinner"
                             onChange={handleChange}
                             minuteInterval={10}
                         />
@@ -240,7 +243,7 @@ const styles = StyleSheet.create({
         color: "#a1a1aa",
     },
     footer: {
-        padding: 16,
+        padding: 10,
         borderTopWidth: 1,
         borderTopColor: "#eee",
     },
