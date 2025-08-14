@@ -30,8 +30,6 @@ export default {
             eas: {
                 projectId: process.env.EAS_PROJECT_ID,
             },
-        },
-        extra: {
             firebaseApiKey: process.env.FIREBASE_API_KEY,
             firebaseAuthDomain: process.env.FIREBASE_AUTH_DOMAIN,
             firebaseProjectId: process.env.FIREBASE_PROJECT_ID,

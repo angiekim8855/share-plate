@@ -16,7 +16,7 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [isSecure, setIsSecure] = useState(true);
 
-    const { user, setUser } = useUser();
+    const { setUser } = useUser();
 
     const handleSignIn = async () => {
         try {
